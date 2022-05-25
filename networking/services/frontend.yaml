@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend
+  namespace: sro
+spec:
+  hosts:
+  - "shatteredrealmsonline.com"
+  - "shatteredrealms.online"
+  gateways:
+  - sro-gateway
+  http:
+    - route:
+        - destination:
+            host: frontend
+            port:
+              number: 80
+          weight: 100
+      match:
+        - uri:
+            prefix: /
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend
+  namespace: sro-qa
+spec:
+  hosts:
+  - "qa.shatteredrealmsonline.com"
+  - "qa.shatteredrealms.online"
+  gateways:
+  - sro-qa-gateway
+  http:
+    - route:
+        - destination:
+            host: frontend
+            port:
+              number: 80
+          weight: 100
+      match:
+        - uri:
+            prefix: /
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend
+  namespace: sro-dev
+spec:
+  hosts:
+  - "dev.shatteredrealmsonline.com"
+  - "dev.shatteredrealms.online"
+  gateways:
+  - sro-dev-gateway
+  http:
+    - route:
+        - destination:
+            host: frontend
+            port:
+              number: 80
+          weight: 100
+      match:
+        - uri:
+            prefix: /

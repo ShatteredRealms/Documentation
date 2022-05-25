@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: accounts
+  namespace: sro
+spec:
+  hosts:
+  - "api.shatteredrealmsonline.com"
+  - "api.shatteredrealms.online"
+  gateways:
+  - sro-gateway
+  http:
+    - route:
+        - destination:
+            host: accounts
+            port:
+              number: 8080
+          weight: 100
+      match:
+        - uri:
+            prefix: /accounts
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: accounts
+  namespace: sro-qa
+spec:
+  hosts:
+  - "qa.api.shatteredrealmsonline.com"
+  - "qa.api.shatteredrealms.online"
+  gateways:
+  - sro-qa-gateway
+  http:
+    - route:
+        - destination:
+            host: accounts
+            port:
+              number: 8080
+          weight: 100
+      match:
+        - uri:
+            prefix: /accounts
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: accounts
+  namespace: sro-dev
+spec:
+  hosts:
+  - "dev.api.shatteredrealmsonline.com"
+  - "dev.api.shatteredrealms.online"
+  gateways:
+  - sro-dev-gateway
+  http:
+    - route:
+        - destination:
+            host: accounts
+            port:
+              number: 8080
+          weight: 100
+      match:
+        - uri:
+            prefix: /accounts

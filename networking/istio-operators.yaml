@@ -1,0 +1,23 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: sro-istiocontrolplane
+spec:
+  components:
+    ingressGateways:
+      - name: istio-ingressgateway
+        namespace: sro
+        enabled: true
+        
+      - name: istio-ingressgateway-qa
+        namespace: sro-qa
+        enabled: true
+        label:
+          istio: ingressgateway-qa
+
+      - name: istio-ingressgateway-dev
+        namespace: sro-dev
+        enabled: true
+        label:
+          istio: ingressgateway-dev
