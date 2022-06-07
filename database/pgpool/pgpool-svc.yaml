@@ -6,10 +6,9 @@ spec:
   type: ClusterIP
   sessionAffinity: None
   ports:
-    - name: postgresql
+    - name: tcp-postgresql
       port: 5432
-      targetPort: postgresql
+      targetPort: 5432
       protocol: TCP
-      nodePort: null
   selector:
     app: pgpool

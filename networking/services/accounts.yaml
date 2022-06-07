@@ -10,15 +10,17 @@ spec:
   gateways:
   - sro-gateway
   http:
-    - route:
-        - destination:
-            host: accounts
-            port:
-              number: 8080
-          weight: 100
-      match:
-        - uri:
-            prefix: /accounts
+  - match:
+    - uri:
+        prefix: /accounts
+    rewrite:
+      uri: ' '
+    route:
+    - destination:
+        host: accounts
+        port:
+          number: 80
+      weight: 100
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -32,15 +34,17 @@ spec:
   gateways:
   - sro-qa-gateway
   http:
-    - route:
-        - destination:
-            host: accounts
-            port:
-              number: 8080
-          weight: 100
-      match:
-        - uri:
-            prefix: /accounts
+  - match:
+    - uri:
+        prefix: /accounts
+    rewrite:
+      uri: ' '
+    route:
+    - destination:
+        host: accounts
+        port:
+          number: 80
+      weight: 100
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -54,12 +58,14 @@ spec:
   gateways:
   - sro-dev-gateway
   http:
-    - route:
-        - destination:
-            host: accounts
-            port:
-              number: 8080
-          weight: 100
-      match:
-        - uri:
-            prefix: /accounts
+  - match:
+    - uri:
+        prefix: /accounts
+    rewrite:
+      uri: ' '
+    route:
+    - destination:
+        host: accounts
+        port:
+          number: 80
+      weight: 100

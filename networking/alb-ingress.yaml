@@ -18,7 +18,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:XXXXXXXXXXXXXX:certificate/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/b2f00a98-2078-4f53-8e0f-8cbd6399fec6"
   name: gw-main-ingress
   namespace: sro
 spec:
@@ -56,7 +56,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:XXXXXXXXXXXXXX:certificate/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/b2f00a98-2078-4f53-8e0f-8cbd6399fec6"
   name: gw-main-ingress
   namespace: sro-qa
 spec:
@@ -94,7 +94,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:XXXXXXXXXXXXXX:certificate/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/b2f00a98-2078-4f53-8e0f-8cbd6399fec6"
   name: gw-main-ingress
   namespace: sro-dev
 spec:
@@ -109,20 +109,6 @@ spec:
               number: 443
         path: /
         pathType: Prefix
-      - backend:
-          service:
-            name: istio-ingressgateway
-            port: 
-              number: 15021
-        path: /healthz/ready
-        pathType: Prefix 
-      - backend:
-          service:
-            name: ssl-redirect
-            port: 
-              name: use-annotation
-        path: /    
-        pathType: Prefix 
   - host: "dev.shatteredrealms.online"
     http: *dev_http
 
@@ -147,7 +133,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:XXXXXXXXXXXXXX:certificate/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/d3704d92-525f-4dd4-a2d0-bb384ab3d231"
   name: gw-api-ingress
   namespace: sro
 spec:
@@ -185,7 +171,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:XXXXXXXXXXXXXX:certificate/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/d3704d92-525f-4dd4-a2d0-bb384ab3d231"
   name: gw-api-ingress
   namespace: sro-qa
 spec:
@@ -223,7 +209,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:XXXXXXXXXXXXXX:certificate/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/d3704d92-525f-4dd4-a2d0-bb384ab3d231"
   name: gw-api-ingress
   namespace: sro-dev
 spec:

@@ -1,0 +1,50 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: pgpool
+  namespace: sro
+spec:
+  hosts:
+  - pgpool-svc
+  gateways:
+  - sro-gateway
+  tcp:
+  - match:
+    - port: 5432
+    route:
+      - destination:
+          host: accounts
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: pgpool
+  namespace: sro-qa
+spec:
+  hosts:
+  - pgpool-svc
+  gateways:
+  - sro-qa-gateway
+  tcp:
+  - match:
+    - port: 5432
+    route:
+      - destination:
+          host: accounts
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: pgpool
+  namespace: sro-dev
+spec:
+  hosts:
+  - pgpool-svc
+  gateways:
+  - sro-dev-gateway
+  tcp:
+  - match:
+    - port: 5432
+    route:
+      - destination:
+          host: accounts

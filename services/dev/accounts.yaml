@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: accounts
-          image: XXXXXXXXXX.dkr.ecr.XXXXXXXX.amazonaws.com/accounts:latest
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/accounts/dev:latest
           imagePullPolicy: Always
           env:
             - name: PS_AUTH_JWT_PRIVATE_KEY_PATH
@@ -33,23 +33,32 @@ spec:
             - name: jwt-certs
               mountPath: "/etc/sro/auth/"
               readOnly: true
-            - name: mysql-db
+            - name: sro-db
               mountPath: "/etc/sro/"
               readOnly: true
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 1
+            httpGet:
+              path: /v1/health
+              port: 8080
       imagePullSecrets:
         - name: regcred
       volumes:
         - name: jwt-certs
           secret:
-            secretName: sro-jwt.default
+            secretName: jwt-certs
             items:
               - key: jwt.key
                 path: key
               - key: jwt.key.pub
                 path: key.pub
-        - name: mysql-db
+        - name: sro-db
           secret:
-            secretName: sro-db.default
+            secretName: database
 ---
 apiVersion: v1
 kind: Service

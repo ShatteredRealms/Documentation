@@ -21,3 +21,20 @@ metadata:
   labels:
     istio-injection:
       enabled
+
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sro-gs
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sro-qa-gs
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sro-dev-gs
