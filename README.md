@@ -10,6 +10,9 @@ Shattered Realms is currently split into 7 different repositories which is conti
 - [Game Backend](https://github.com/ShatteredRealms/GameBackend): Microservice backend for the game written in Golang.
 - [Launcher](https://github.com/ShatteredRealms/Launcher): Game client launcher written in TypeScript using Electron.
 
+# Deployment
+Deployment configurations are assuming AWS, but other cloud providers can be used with slight modifications.
+
 ## Deployment Order
 To smoothly deploy, use the following order:
 1. Global

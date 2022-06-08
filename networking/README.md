@@ -64,9 +64,13 @@ kubectl apply -f gateway.yaml
 
 Create 2 public AWS certificates. One for the wildcard base domain(s) (ex. `domain.tld` and `*.domain.tld`). Then create another for the `api.domain.tld` and `*.api.domain.tld`. Add these ARNs to the `alb-ingress.yaml`.
 
-Apply the ALB ingress
+Apply the ALB ingress and reaplce `{{SRO_ARN}}` and `{{SRO_API_ARN}}` with the arns for the two certs just created.
 ```
-kubectl apply -f alb-ingress.yaml
+cat alb-ingress.yaml | \
+  sed \
+    -e "s|{{SRO_ARN}}|$(aws acm list-certificates --output text --query 'CertificateSummaryList[?DomainName==`shatteredrealmsonline.com`].CertificateArn')|g" \
+    -e "s|{{SRO_API_ARN}}|$(aws acm list-certificates --output text --query 'CertificateSummaryList[?DomainName==`api.shatteredrealmsonline.com`].CertificateArn')|g" | \
+  kubectl apply -f -
 ```
 
 Get the ingress loadbalanced endpoints and setup DNS 

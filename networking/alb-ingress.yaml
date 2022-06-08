@@ -18,7 +18,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/b2f00a98-2078-4f53-8e0f-8cbd6399fec6"
+    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_ARN}}"
   name: gw-main-ingress
   namespace: sro
 spec:
@@ -56,7 +56,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/b2f00a98-2078-4f53-8e0f-8cbd6399fec6"
+    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_ARN}}"
   name: gw-main-ingress
   namespace: sro-qa
 spec:
@@ -94,7 +94,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/b2f00a98-2078-4f53-8e0f-8cbd6399fec6"
+    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_ARN}}"
   name: gw-main-ingress
   namespace: sro-dev
 spec:
@@ -133,7 +133,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/d3704d92-525f-4dd4-a2d0-bb384ab3d231"
+    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_API_ARN}}"
   name: gw-api-ingress
   namespace: sro
 spec:
@@ -171,7 +171,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/d3704d92-525f-4dd4-a2d0-bb384ab3d231"
+    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_API_ARN}}"
   name: gw-api-ingress
   namespace: sro-qa
 spec:
@@ -209,7 +209,7 @@ metadata:
           "StatusCode": "HTTP_301"
         }
       }
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:779965382548:certificate/d3704d92-525f-4dd4-a2d0-bb384ab3d231"
+    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_API_ARN}}"
   name: gw-api-ingress
   namespace: sro-dev
 spec:
