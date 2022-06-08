@@ -2,6 +2,7 @@
 # Overview
 Shattered Realms is currently split into 7 different repositories which is continuing to grow.
 - [Accounts](https://github.com/ShatteredRealms/Accounts): Microservice managing user account authentication and authorization written in Golang.
+- [Characters](https://github.com/ShatteredRealms/Characters): Microservice managing player characters.
 - [Chat](https://github.com/ShatteredRealms/Chat): Microservice managing chat messages written in Golang.
 - [Documentation](#): Documentation and planning across all Shattered Realms projects.
 - [Frontend](https://github.com/ShatteredRealms/Frontend): Website for Shattered Realms written in TypeScript using Angular.

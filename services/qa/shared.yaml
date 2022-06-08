@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jwt-certs
+  namespace: sro-qa
+data:
+  jwt.key: '{{JWT_PRIVATE_KEY}}'
+  jwt.key.pub: '{{JWT_PUBLIC_KEY}}'

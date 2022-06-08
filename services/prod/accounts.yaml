@@ -69,3 +69,11 @@ spec:
       targetPort: 8080
       protocol: TCP
       name: http
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database
+  namespace: sro
+data:
+  db.yaml: '{{DATABASE_FILE}}'
