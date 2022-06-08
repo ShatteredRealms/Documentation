@@ -13,6 +13,14 @@ Shattered Realms is currently split into 7 different repositories which is conti
 # Deployment
 Deployment configurations are assuming AWS, but other cloud providers can be used with slight modifications.
 
+## Requirements
+All commands and scripts and commands are currently written in UNIX bash format. The following applications are needed:
+1. kubectl
+2. helm
+3. openssl
+4. aws
+5. istioctl
+
 ## Deployment Order
 To smoothly deploy, use the following order:
 1. Global
