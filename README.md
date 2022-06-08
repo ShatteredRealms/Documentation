@@ -22,7 +22,7 @@ All commands and scripts and commands are currently written in UNIX bash format.
 5. istioctl
 
 ## Deployment Order
-To smoothly deploy, use the following order:
+To deploy smoothly, use the following order:
 1. Global
 2. Networking
 3. Database
