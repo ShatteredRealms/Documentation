@@ -56,6 +56,24 @@ kubectl exec -t -n sro pg-client \
     -U postgres \
     -d postgres \
     -c 'create database accounts;'"
+
+kubectl exec -t -n sro-qa pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro-qa postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database accounts;'"
+
+kubectl exec -t -n sro-dev pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro-dev postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database accounts;'"
 ```
 
 To install the account services, apply the configurations with replacing `{{DATABASE_FILE}}` with the correct database file format. Check
