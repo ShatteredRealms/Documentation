@@ -9,3 +9,10 @@ Shattered Realms is currently split into 7 different repositories which is conti
 - [Game](https://github.com/ShatteredRealms/ShatteredRealms_Game): Game client and server written in C++ using Unreal Engine 5.
 - [Game Backend](https://github.com/ShatteredRealms/GameBackend): Microservice backend for the game written in Golang.
 - [Launcher](https://github.com/ShatteredRealms/Launcher): Game client launcher written in TypeScript using Electron.
+
+## Deployment Order
+To smoothly deploy, use the following order:
+1. Global
+2. Networking
+3. Database
+4. Services
