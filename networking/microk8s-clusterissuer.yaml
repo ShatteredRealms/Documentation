@@ -1,0 +1,45 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging-cluster
+spec:
+  acme:
+    email: admin@forever.dev
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-staging-cluster
+    solvers:
+    - selector:
+        dnsZones:
+          - "shatteredrealmsonline.com"
+          - "shatteredrealms.online"
+      dns01:
+        route53:
+          region: us-east-1
+          accessKeyID: AKIA3LGMPH6KKTF3FKEE
+          secretAccessKeySecretRef:
+            name: prod-route53-credentials-secret
+            key: secret-access-key
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod-cluster
+spec:
+  acme:
+    email: admin@forever.dev
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod-cluster
+    solvers:
+    - selector:
+        dnsZones:
+          - "shatteredrealmsonline.com"
+          - "shatteredrealms.online"
+      dns01:
+        route53:
+          region: us-east-1
+          accessKeyID: AKIA3LGMPH6KKTF3FKEE
+          secretAccessKeySecretRef:
+            name: prod-route53-credentials-secret
+            key: secret-access-key

@@ -36,15 +36,6 @@ spec:
             - name: sro-db
               mountPath: "/etc/sro/"
               readOnly: true
-          livenessProbe:
-            initialDelaySeconds: 10
-            periodSeconds: 3
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 1
-            httpGet:
-              path: /v1/health
-              port: 8080
       imagePullSecrets:
         - name: regcred
       volumes:

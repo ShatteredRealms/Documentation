@@ -4,6 +4,8 @@ metadata:
   namespace: istio-system
   name: sro-istiocontrolplane
 spec:
+  meshConfig:
+    accessLogFile: /dev/stdout
   components:
     ingressGateways:
       - name: istio-ingressgateway

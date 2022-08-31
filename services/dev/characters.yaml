@@ -1,36 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounts
-  namespace: sro
+  name: characters
+  namespace: sro-dev
   labels:
-    app: accounts
+    app: characters
     version: v1
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: accounts
+      app: characters
       version: v1
   template:
     metadata:
       labels:
-        app: accounts
+        app: characters
         version: v1
     spec:
       containers:
-        - name: accounts
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/accounts:latest
-          ports:
-          - containerPort: 8080
+        - name: characters
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/characters/dev:latest
           imagePullPolicy: Always
           env:
-            - name: PS_AUTH_JWT_PRIVATE_KEY_PATH
-              value: "/etc/sro/auth/keys/key"
-            - name: PS_AUTH_JWT_PUBLIC_KEY_PATH
-              value: "/etc/sro/auth/keys/key.pub"
-            - name: SRO_AUTH_MODE
-              value: "release"
+            - name: SRO_ACCOUNTS_HOST 
+              value: "dev.shatteredrealmsonline.com"
           volumeMounts:
             - name: jwt-certs
               mountPath: "/etc/sro/auth/"
@@ -56,25 +50,26 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts
-  namespace: sro
+  name: characters
+  namespace: sro-dev
   labels:
-    app: accounts
-    service: accounts
+    app: characters
+    service: characters
 spec:
   type: ClusterIP
   selector:
-    app: accounts
+    app: characters
     version: v1
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 8081
       protocol: TCP
+      name: http
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: database
-  namespace: sro
+  namespace: sro-dev
 data:
   db.yaml: '{{DATABASE_FILE}}'

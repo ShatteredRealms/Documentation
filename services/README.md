@@ -79,15 +79,74 @@ kubectl exec -t -n sro-dev pg-client \
 To install the account services, apply the configurations with replacing `{{DATABASE_FILE}}` with the correct database file format. Check
 the account microservice for more information.
 ```
-cat prod/accounts.yaml | \
-  sed "s/{{DATABASE_FILE}}/$(cat prod/files/accounts-db.yaml | base64 -w 0)/g" | \
+DATABASE_PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+DATABASE_FILE=$(cat prod/files/accounts-db.yaml | sed "s/{{DATABASE_PASSWORD}}/$DATABASE_PASSWORD/g" | base64 -w 0)
+istioctl kube-inject -f prod/accounts.yaml | \
+  sed "s/{{DATABASE_FILE}}/$DATABASE_FILE/g" | \
   kubectl apply -f -
 
-cat qa/accounts.yaml | \
+DATABASE_PASSWORD=$(kubectl get secret -n sro-qa postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+DATABASE_FILE=$(cat qa/files/accounts-db.yaml | sed "s/{{DATABASE_PASSWORD}}/$DATABASE_PASSWORD/g" | base64 -w 0)
+istioctl kube-inject -f qa/accounts.yaml | \
+  sed "s/{{DATABASE_FILE}}/$DATABASE_FILE/g" | \
+  kubectl apply -f -
+
+DATABASE_PASSWORD=$(kubectl get secret -n sro-dev postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+DATABASE_FILE=$(cat dev/files/accounts-db.yaml | sed "s/{{DATABASE_PASSWORD}}/$DATABASE_PASSWORD/g" | base64 -w 0)
+istioctl kube-inject -f dev/accounts.yaml | \
+  sed "s/{{DATABASE_FILE}}/$DATABASE_FILE/g" | \
+  kubectl apply -f -
+```
+
+## Characters 
+The account service requires an `characters` database to be created. First create that for each environment.
+```
+kubectl exec -t -n sro pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database characters;'"
+
+kubectl exec -t -n sro-qa pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro-qa postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database characters;'"
+
+kubectl exec -t -n sro-dev pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro-dev postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database characters;'"
+```
+
+To install the account services, apply the configurations with replacing `{{DATABASE_FILE}}` with the correct database file format. Check
+the account microservice for more information.
+```
+PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+DB_FILE=$(cat prod/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
+cat prod/characters.yaml | \
+  sed "s/{{DATABASE_FILE}}/$DB_FILE/g" | \
+  kubectl apply -f -
+
+PASSWORD=$(kubectl get secret -n sro-qa postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+DB_FILE=$(cat qa/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
+cat qa/characters.yaml | \
   sed "s/{{DATABASE_FILE}}/$(cat qa/files/accounts-db.yaml | base64 -w 0)/g" | \
   kubectl apply -f -
 
-cat dev/accounts.yaml | \
+PASSWORD=$(kubectl get secret -n sro-dev postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+DB_FILE=$(cat dev/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
+cat dev/characters.yaml | \
   sed "s/{{DATABASE_FILE}}/$(cat dev/files/accounts-db.yaml | base64 -w 0)/g" | \
   kubectl apply -f -
 ```

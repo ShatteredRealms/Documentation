@@ -32,6 +32,7 @@ mkdir -p certs
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -keyout certs/key.pem -out certs/cert.pem -subj "/CN=shatteredrealmsonline.com" \
   -addext "subjectAltName=DNS:*.shatteredrealmsonline.com"
+openssl x509 -req -sha256 -days 365 -CA certs/sro.crt -CAkey certs/sro.key -set_serial 1 -in certs/cert.pem -out certs/sro.com.crt
 
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -keyout certs/qa-key.pem -out certs/qa-cert.pem -subj "/CN=shatteredrealmsonline.com" \
@@ -61,6 +62,12 @@ Apply the gateway
 ```
 kubectl apply -f gateway.yaml
 ```
+If you're not using microk8s then you can use the `microk8s-ingress.yaml`
+```
+kubectl apply -f microk8s-ingress.yaml
+```
+
+Otherwise you'll need the following:
 
 Create 2 public AWS certificates. One for the wildcard base domain(s) (ex. `domain.tld` and `*.domain.tld`). Then create another for the `api.domain.tld` and `*.api.domain.tld`. Add these ARNs to the `alb-ingress.yaml`.
 
@@ -73,7 +80,9 @@ cat alb-ingress.yaml | \
   kubectl apply -f -
 ```
 
-Get the ingress loadbalanced endpoints and setup DNS 
+Get the ingress loadbalanced endpoints and setup DNS
+
+If the load balancer is a hostname
 ```
 echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}") && \
@@ -87,6 +96,22 @@ echo Development Main Ingress: $(kubectl get ingress gw-main-ingress -n sro-dev 
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}") && \
 echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+```
+
+If the loadbalancer is an IP
+```
+echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
+-o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
+echo Production API Ingress: $(kubectl get ingress gw-api-ingress -n sro \
+-o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
+echo Quality-Assurance Main Ingress: $(kubectl get ingress gw-main-ingress -n sro-qa \
+-o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
+echo Quality-Assurance API Ingress: $(kubectl get ingress gw-api-ingress -n sro-qa \
+-o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
+echo Development Main Ingress: $(kubectl get ingress gw-main-ingress -n sro-dev \
+-o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
+echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
+-o jsonpath="{.status.loadBalancer.ingress[*].ip}")
 ```
 
 Create the Virtual Services

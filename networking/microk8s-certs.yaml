@@ -1,0 +1,45 @@
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-cert
+  namespace: sro
+spec:
+  secretName: ingress-cert
+  commonName: shatteredrealmsonline.com
+  dnsNames:
+  - shatteredrealmsonline.com
+  - api.shatteredrealmsonline.com
+  issuerRef:
+    name: letsencrypt-prod-cluster
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-cert
+  namespace: sro-qa
+spec:
+  secretName: ingress-cert
+  commonName: qa.shatteredrealmsonline.com
+  dnsNames:
+  - qa.shatteredrealmsonline.com
+  - qa.api.shatteredrealmsonline.com
+  issuerRef:
+    name: letsencrypt-prod-cluster
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-cert
+  namespace: sro-dev
+spec:
+  secretName: ingress-cert
+  commonName: dev.shatteredrealmsonline.com
+  dnsNames:
+  - dev.shatteredrealmsonline.com
+  - dev.api.shatteredrealmsonline.com
+  issuerRef:
+    name: letsencrypt-prod-cluster
+    kind: ClusterIssuer

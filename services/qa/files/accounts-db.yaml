@@ -3,4 +3,4 @@ master:
   port: '5432'
   name: 'accounts'
   user: 'postgres'
-  pass: 'DDzMfLAqG2'
+  pass: '{{DATABASE_PASSWORD}}'
