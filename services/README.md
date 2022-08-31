@@ -134,19 +134,19 @@ the account microservice for more information.
 ```
 PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
 DB_FILE=$(cat prod/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
-cat prod/characters.yaml | \
+istioctl kube-inject -f prod/characters.yaml | \
   sed "s/{{DATABASE_FILE}}/$DB_FILE/g" | \
   kubectl apply -f -
 
 PASSWORD=$(kubectl get secret -n sro-qa postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
 DB_FILE=$(cat qa/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
-cat qa/characters.yaml | \
+istioctl kube-inject -f qa/characters.yaml | \
   sed "s/{{DATABASE_FILE}}/$(cat qa/files/accounts-db.yaml | base64 -w 0)/g" | \
   kubectl apply -f -
 
 PASSWORD=$(kubectl get secret -n sro-dev postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
 DB_FILE=$(cat dev/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
-cat dev/characters.yaml | \
+istioctl kube-inject -f dev/characters.yaml | \
   sed "s/{{DATABASE_FILE}}/$(cat dev/files/accounts-db.yaml | base64 -w 0)/g" | \
   kubectl apply -f -
 ```
@@ -154,9 +154,9 @@ cat dev/characters.yaml | \
 ## Frontend
 To install the frontend services, simply apply the configurations
 ```
-kubectl apply -f prod/frontend.yaml
-kubectl apply -f qa/frontend.yaml
-kubectl apply -f dev/frontend.yaml
+istioctl kube-inject -f prod/frontend.yaml | kubectl apply -f -
+istioctl kube-inject -f qa/frontend.yaml | kubectl apply -f -
+istioctl kube-inject -f dev/frontend.yaml | kubectl apply -f -
 ```
 
 ## Agones
