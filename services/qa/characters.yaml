@@ -45,7 +45,7 @@ spec:
                 path: key.pub
         - name: sro-db
           secret:
-            secretName: database
+            secretName: characters-database
 ---
 apiVersion: v1
 kind: Service
@@ -69,7 +69,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: database
+  name: characters-database
   namespace: sro-qa
 data:
   db.yaml: '{{DATABASE_FILE}}'

@@ -25,11 +25,7 @@ spec:
           - containerPort: 8080
           imagePullPolicy: Always
           env:
-            - name: PS_AUTH_JWT_PRIVATE_KEY_PATH
-              value: "/etc/sro/auth/keys/key"
-            - name: PS_AUTH_JWT_PUBLIC_KEY_PATH
-              value: "/etc/sro/auth/keys/key.pub"
-            - name: SRO_AUTH_MODE
+            - name: SRO_ACCOUNTS_MODE
               value: "release"
           volumeMounts:
             - name: jwt-certs
@@ -51,7 +47,7 @@ spec:
                 path: key.pub
         - name: sro-db
           secret:
-            secretName: database
+            secretName: accounts-database
 ---
 apiVersion: v1
 kind: Service
@@ -74,7 +70,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: database
+  name: accounts-database
   namespace: sro
 data:
   db.yaml: '{{DATABASE_FILE}}'

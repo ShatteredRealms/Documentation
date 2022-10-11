@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamebackend
+  namespace: sro
+  labels:
+    app: gamebackend
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gamebackend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: gamebackend
+        version: v1
+    spec:
+      containers:
+        - name: gamebackend
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gamebackend:latest
+          ports:
+          - containerPort: 8888
+          imagePullPolicy: Always
+          env:
+            - name: SRO_ACCOUNTS_HOST 
+              value: "accounts"
+            - name: SRO_ACCOUNTS_PORT
+              value: "80"
+            - name: SRO_CHARACTERS_HOST
+              value: "characters"
+            - name: SRO_CHARACTERS_PORT
+              value: "80"
+            - name: SRO_AGONES_HOST
+              value: "76.238.153.73"
+            - name: SRO_AGONES_NS
+              value: "sro"
+          volumeMounts:
+            - name: jwt-certs
+              mountPath: "/etc/sro/auth/"
+              readOnly: true
+            - name: agones-client-certs
+              mountPath: "/etc/sro/auth/agones/client"
+              readOnly: true
+            - name: agones-ca
+              mountPath: "/etc/sro/auth/agones/ca"
+              readOnly: true
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: jwt-certs
+          secret:
+            secretName: jwt-certs
+            items:
+              - key: jwt.key
+                path: key
+              - key: jwt.key.pub
+                path: key.pub
+        - name: agones-client-certs
+          secret:
+            secretName: allocator-client.default
+            items:
+              - key: tls.crt
+                path: cert
+              - key: tls.key
+                path: key
+        - name: agones-ca
+          secret:
+            secretName: allocator-tls-ca
+            items:
+              - key: tls-ca.crt
+                path: ca
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamebackend
+  namespace: sro
+  labels:
+    app: gamebackend
+    service: gamebackend
+spec:
+  type: ClusterIP
+  selector:
+    app: gamebackend
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 8888
+      protocol: TCP 
+      name: http-web

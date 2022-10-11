@@ -141,13 +141,13 @@ istioctl kube-inject -f prod/characters.yaml | \
 PASSWORD=$(kubectl get secret -n sro-qa postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
 DB_FILE=$(cat qa/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
 istioctl kube-inject -f qa/characters.yaml | \
-  sed "s/{{DATABASE_FILE}}/$(cat qa/files/accounts-db.yaml | base64 -w 0)/g" | \
+  sed "s/{{DATABASE_FILE}}/$DB_FILE/g" | \
   kubectl apply -f -
 
 PASSWORD=$(kubectl get secret -n sro-dev postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
 DB_FILE=$(cat dev/files/characters-db.yaml | sed "s/{{PASSWORD}}/$PASSWORD/g" | base64 -w 0)
-istioctl kube-inject -f dev/characters.yaml | \
-  sed "s/{{DATABASE_FILE}}/$(cat dev/files/accounts-db.yaml | base64 -w 0)/g" | \
+istioctl kube-inject -f /characters.yaml | \
+  sed "s/{{DATABASE_FILE}}/$DB_FILE/g" | \
   kubectl apply -f -
 ```
 
@@ -166,7 +166,37 @@ helm repo add agones https://agones.dev/chart/stable
 helm repo update
 helm install agones --namespace agones-system \
   --create-namespace \
-  --set "gameservers.namespaces={sro-gs,sro-qa-gs,sro-dev-gs}" \
+  --set "gameservers.namespaces={sro,sro-qa,sro-dev}" \
   --set "agones.featureGates=PlayerTracking=true" \
   agones/agones
+```
+
+Set the external load balancer IP for agones
+```bash
+EXTERNAL_IP=$(kubectl get services agones-allocator -n agones-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+helm upgrade --install --wait --reuse-values \
+   --set agones.allocator.service.loadBalancerIP=${EXTERNAL_IP} \
+   agones agones/agones --namespace agones-system
+```
+
+## Game Server
+Apply the production fleet
+```bash
+kubectl apply -f prod/fleet.yaml
+```
+
+## Server Finder
+Copy the allocator ca cert to the namespaces `sro` `sro-qa` and `sro-dev` namespaces.
+```bash
+kubectl delete secret allocator-tls-ca -n sro
+kubectl delete secret allocator-tls-ca -n sro-qa
+kubectl delete secret allocator-tls-ca -n sro-dev
+kubectl get secret allocator-tls-ca -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro/' | kubectl apply -f -
+kubectl get secret allocator-tls-ca -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro-qa/' | kubectl apply -f -
+kubectl get secret allocator-tls-ca -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro-dev/' | kubectl apply -f -
+```
+
+Apply the configurations
+```bash
+istioctl kube-inject -f prod/gamebackend.yaml | kubectl apply -f -
 ```
