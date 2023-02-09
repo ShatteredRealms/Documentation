@@ -9,6 +9,8 @@ Kubernetes uses [istio](https://istio.io/) to route traffic. The configuration f
 For AWS, configure the [Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller).
 
 Next install istio with [istioctl](https://istio.io/latest/docs/setup/getting-started/)
+
+AWS Version
 ```
 istioctl install \
   --set profile=demo \
@@ -16,12 +18,20 @@ istioctl install \
   -f istio-operators.yaml
 ```
 
-Setup istio injection for the 3 namespaces if it already isn't
+Local Version
+```
+istioctl install \
+  --set profile=minimal \
+  --set values.global.proxy.holdApplicationUntilProxyStarts=true \
+  -f istio-operators.yaml
+```
+
+<!-- Setup istio injection for the 3 namespaces if it already isn't
 ```
 kubectl label ns sro istio-injection=enabled --overwrite
 kubectl label ns sro-qa istio-injection=enabled --overwrite
 kubectl label ns sro-dev istio-injection=enabled --overwrite
-```
+``` -->
 
 Generate a certificate for self-signing certificates in the 3 environments.
 ```
@@ -58,14 +68,20 @@ echo "You can delete folder $(pwd) to remove used certs"
 popd 
 ```
 
-Apply the gateway
+Apply the gateway if not using microk8s
 ```
 kubectl apply -f gateway.yaml
 ```
-If you're not using microk8s then you can use the `microk8s-ingress.yaml`
+Otherwise apply the microk8s gateway
 ```
+kubectl apply -f microk8s-gateway.yaml
+```
+
+
+If you're using microk8s then you can use the `microk8s-ingress.yaml`
+<!-- ```
 kubectl apply -f microk8s-ingress.yaml
-```
+``` -->
 
 Otherwise you'll need the following:
 
@@ -98,7 +114,8 @@ echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 ```
 
-If the loadbalancer is an IP
+
+(Old) If the loadbalancer is an IP
 ```
 echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
 -o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \

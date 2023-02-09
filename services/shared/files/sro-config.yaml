@@ -1,0 +1,52 @@
+accounts:
+  remote: 
+    host: 'accounts'
+    port: 80
+  mode: 'production'
+  logLevel: 4
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: '{{ACCOUNTS_DB_PASSWORD}}'
+characters:
+  remote:
+    host: 'characters'
+    port: 80
+  mode: 'production'
+  logLevel: 4
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: '{{CHARACTERS_DB_PASSWORD}}'
+gamebackend:
+  remote:
+    host: 'gamebackend'
+    port: 80
+  mode: 'production'
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: '{{GAMEBACKEND_DB_PASSWORD}}'
+chat:
+  remote:
+    host: 'chat'
+    port: 80
+  mode: 'production'
+  kafka:
+    port: 9092
+    host: 'my-cluster-kafka-bootstrap'
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: '{{CHAT_DB_PASSWORD}}'
+agones:
+  namespace: '{{NAMESPACE}}'
+  allocator:
+    remote:
+      port: 443
+      host: '{{AGONES_IP}}'
+uptrace:
+  host: 'uptrace.dev'
+  port: 443
+  id: '{{UPTRACE_ID}}'
+  token: '{{UPTRACE_TOKEN}}'

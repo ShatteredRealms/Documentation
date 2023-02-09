@@ -1,0 +1,155 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: chat
+  namespace: sro
+spec:
+  hosts:
+  - "api.shatteredrealmsonline.com"
+  - "api.shatteredrealms.online"
+  gateways:
+  - sro-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /chat/
+    - uri:
+        exact: /chat
+    rewrite:
+      uri: '/'
+    route:
+    - destination:
+        host: chat
+        port:
+          number: 80
+      weight: 100
+    corsPolicy:
+      allowOrigin:
+        - "*"
+        - ".*"
+      allowMethods:
+        - POST
+        - GET
+        - OPTIONS
+        - PUT
+        - DELETE
+      allowHeaders:
+        - keep-alive
+        - user-agent
+        - cache-control
+        - content-type
+        - content-transfer-encoding
+        - x-accept-content-transfer-encoding
+        - x-accept-response-streaming
+        - x-user-agent
+        - x-grpc-web
+        - grpc-timeout
+        - authorization
+      maxAge: 1728s
+      exposeHeaders:
+        - grpc-status
+        - grpc-message
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: chat
+  namespace: sro-qa
+spec:
+  hosts:
+  - "qa.api.shatteredrealmsonline.com"
+  - "qa.api.shatteredrealms.online"
+  gateways:
+  - sro-qa-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /chat/
+    - uri:
+        exact: /chat
+    rewrite:
+      uri: '/'
+    route:
+    - destination:
+        host: chat
+        port:
+          number: 80
+      weight: 100
+    corsPolicy:
+      allowOrigin:
+        - "*"
+        - ".*"
+      allowMethods:
+        - POST
+        - GET
+        - OPTIONS
+        - PUT
+        - DELETE
+      allowHeaders:
+        - keep-alive
+        - user-agent
+        - cache-control
+        - content-type
+        - content-transfer-encoding
+        - x-accept-content-transfer-encoding
+        - x-accept-response-streaming
+        - x-user-agent
+        - x-grpc-web
+        - grpc-timeout
+        - authorization
+      maxAge: 1728s
+      exposeHeaders:
+        - grpc-status
+        - grpc-message
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: chat
+  namespace: sro-dev
+spec:
+  hosts:
+  - "dev.api.shatteredrealmsonline.com"
+  - "dev.api.shatteredrealms.online"
+  gateways:
+  - sro-dev-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /chat/
+    - uri:
+        exact: /chat
+    rewrite:
+      uri: '/'
+    route:
+    - destination:
+        host: chat
+        port:
+          number: 80
+      weight: 100
+    corsPolicy:
+      allowOrigin:
+        - "*"
+        - ".*"
+      allowMethods:
+        - POST
+        - GET
+        - OPTIONS
+        - PUT
+        - DELETE
+      allowHeaders:
+        - keep-alive
+        - user-agent
+        - cache-control
+        - content-type
+        - content-transfer-encoding
+        - x-accept-content-transfer-encoding
+        - x-accept-response-streaming
+        - x-user-agent
+        - x-grpc-web
+        - grpc-timeout
+        - authorization
+      maxAge: 1728s
+      exposeHeaders:
+        - grpc-status
+        - grpc-message

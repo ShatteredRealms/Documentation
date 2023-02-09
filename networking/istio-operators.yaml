@@ -11,6 +11,8 @@ spec:
       - name: istio-ingressgateway
         namespace: sro
         enabled: true
+        label:
+          istio: ingressgateway
         
       - name: istio-ingressgateway-qa
         namespace: sro-qa

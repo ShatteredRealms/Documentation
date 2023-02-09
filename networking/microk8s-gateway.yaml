@@ -18,7 +18,7 @@ spec:
         - "shatteredrealmsonline.com"
         - "shatteredrealms.online"
         - "api.shatteredrealmsonline.com"
-        - "shatteredrealms.online"
+        - "api.shatteredrealms.online"
     - hosts:
       - "*"
       port:
@@ -48,7 +48,7 @@ spec:
         - "qa.shatteredrealmsonline.com"
         - "qa.shatteredrealms.online"
         - "qa.api.shatteredrealmsonline.com"
-        - "qa.shatteredrealms.online"
+        - "qa.api.shatteredrealms.online"
     - hosts:
       - "*"
       port:
@@ -78,7 +78,7 @@ spec:
         - "dev.shatteredrealmsonline.com"
         - "dev.shatteredrealms.online"
         - "dev.api.shatteredrealmsonline.com"
-        - "dev.shatteredrealms.online"
+        - "dev.api.shatteredrealms.online"
     - hosts:
       - "*"
       port:

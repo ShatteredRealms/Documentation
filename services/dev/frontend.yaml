@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/frontend/dev:latest
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/frontend:latest
           imagePullPolicy: Always
           ports:
           - containerPort: 80
@@ -37,6 +37,25 @@ metadata:
     service: frontend
 spec:
   type: ClusterIP
+  selector:
+    app: frontend
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-headless
+  namespace: sro-dev
+  labels:
+    app: frontend
+    headless: frontend
+spec:
+  clusterIP: None
   selector:
     app: frontend
     version: v1

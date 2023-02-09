@@ -20,6 +20,7 @@ All commands and scripts and commands are currently written in UNIX bash format.
 3. openssl
 4. aws
 5. istioctl
+6. clickhouse-client
 
 ## Deployment Order
 To deploy smoothly, use the following order:

@@ -1,0 +1,52 @@
+accounts:
+  remote: 
+    host: 'accounts'
+    port: 80
+  mode: 'production'
+  logLevel: 4
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: 'ervJA7vFMn'
+characters:
+  remote:
+    host: 'characters'
+    port: 80
+  mode: 'production'
+  logLevel: 4
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: 'ervJA7vFMn'
+gamebackend:
+  remote:
+    host: 'gamebackend'
+    port: 80
+  mode: 'production'
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: 'ervJA7vFMn'
+chat:
+  remote:
+    host: 'chat'
+    port: 80
+  mode: 'production'
+  kafka:
+    port: 9092
+    host: 'my-cluster-kafka-bootstrap'
+  db:
+    master:
+      host: 'postgres-postgresql-ha-pgpool'
+      password: 'ervJA7vFMn'
+agones:
+  namespace: 'sro'
+  allocator:
+    remote:
+      port: 443
+      host: ''
+uptrace:
+  host: 'uptrace.dev'
+  port: 443
+  id: '1041'
+  token: 'e_HKNPYAHi_gfERB08YhkQ'

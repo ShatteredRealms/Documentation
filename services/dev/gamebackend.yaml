@@ -1,32 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounts
+  name: gamebackend
   namespace: sro-dev
   labels:
-    app: accounts
+    app: gamebackend
     version: v1
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: accounts
+      app: gamebackend
       version: v1
   template:
     metadata:
       labels:
-        app: accounts
+        app: gamebackend
         version: v1
     spec:
       containers:
-        - name: accounts
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/accounts:0.0.1
+        - name: gamebackend
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gamebackend:latest
           ports:
-          - containerPort: 8080
+          - containerPort: 8082
           imagePullPolicy: Always
           volumeMounts:
             - name: jwt-certs
               mountPath: "/etc/sro/auth/"
+              readOnly: true
+            - name: agones-client-certs
+              mountPath: "/etc/sro/auth/agones/client"
+              readOnly: true
+            - name: agones-ca
+              mountPath: "/etc/sro/auth/agones/ca"
               readOnly: true
             - name: sro-config
               mountPath: "/etc/sro/"
@@ -42,6 +48,20 @@ spec:
                 path: key
               - key: jwt.key.pub
                 path: key.pub
+        - name: agones-client-certs
+          secret:
+            secretName: allocator-client.default
+            items:
+              - key: tls.crt
+                path: cert
+              - key: tls.key
+                path: key
+        - name: agones-ca
+          secret:
+            secretName: allocator-tls-ca
+            items:
+              - key: tls-ca.crt
+                path: ca
         - name: sro-config
           secret:
             secretName: sro-config 
@@ -52,35 +72,37 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts
+  name: gamebackend
   namespace: sro-dev
   labels:
-    app: accounts
-    service: accounts
+    app: gamebackend
+    service: gamebackend
 spec:
   type: ClusterIP
   selector:
-    app: accounts
+    app: gamebackend
     version: v1
   ports:
     - port: 80
-      targetPort: 8080
-      protocol: TCP
+      targetPort: 8082
+      protocol: TCP 
+      name: http-web
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts-headless
+  name: gamebackend-headless
   namespace: sro-dev
   labels:
-    app: accounts
-    headless: accounts
+    app: gamebackend
+    headless: gamebackend
 spec:
   clusterIP: None
   selector:
-    app: accounts
+    app: gamebackend
     version: v1
   ports:
     - port: 80
-      targetPort: 8080
-      protocol: TCP
+      targetPort: 8082
+      protocol: TCP 
+      name: http-web

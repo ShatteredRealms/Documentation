@@ -1,28 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accounts
-  namespace: sro-dev
+  name: chat
+  namespace: sro
   labels:
-    app: accounts
+    app: chat
     version: v1
+    sro: microservice
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: accounts
+      app: chat
       version: v1
   template:
     metadata:
       labels:
-        app: accounts
+        app: chat
         version: v1
+        sro: microservice
     spec:
       containers:
-        - name: accounts
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/accounts:0.0.1
+        - name: chat
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/chat:0.0.1
           ports:
-          - containerPort: 8080
+          - containerPort: 8081
           imagePullPolicy: Always
           volumeMounts:
             - name: jwt-certs
@@ -52,35 +54,58 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts
-  namespace: sro-dev
+  name: chat
+  namespace: sro
   labels:
-    app: accounts
-    service: accounts
+    app: chat
+    service: chat
+    api: http
 spec:
   type: ClusterIP
   selector:
-    app: accounts
+    app: chat
     version: v1
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 8180
       protocol: TCP
+      appProtocol: grpc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: accounts-headless
-  namespace: sro-dev
+  name: chat-grpc
+  namespace: sro
   labels:
-    app: accounts
-    headless: accounts
+    app: chat
+    service: chat
+    api: grpc
+spec:
+  type: LoadBalancer
+  selector:
+    app: chat
+    version: v1
+  ports:
+    - port: 8180
+      targetPort: 8180
+      protocol: TCP
+      appProtocol: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-headless
+  namespace: sro
+  labels:
+    app: chat
+    headless: chat
 spec:
   clusterIP: None
   selector:
-    app: accounts
+    app: chat
     version: v1
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 8180
       protocol: TCP
+      appProtocol: grpc
