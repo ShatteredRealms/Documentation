@@ -9,19 +9,46 @@ spec:
   components:
     ingressGateways:
       - name: istio-ingressgateway
-        namespace: sro
+        namespace: istio-system
         enabled: true
         label:
           istio: ingressgateway
-        
+        k8s:
+          service:
+            ports:
+              - port: 15021
+                targetPort: 15021
+                name: status-port
+                protocol: TCP
+              - port: 80
+                targetPort: 80
+                name: http2
+                protocol: TCP
+              - port: 443
+                targetPort: 443
+                name: https
+                protocol: TCP
+              - port: 15012
+                targetPort: 15012
+                name: tcp-istiod
+                protocol: TCP
+              - port: 15443
+                targetPort: 15443
+                name: tls
+                protocol: TCP
+              - port: 8180
+                targetPort: 8180
+                name: i-grpc-8180
+                protocol: TCP
+
       - name: istio-ingressgateway-qa
-        namespace: sro-qa
+        namespace: istio-system
         enabled: true
         label:
           istio: ingressgateway-qa
 
       - name: istio-ingressgateway-dev
-        namespace: sro-dev
+        namespace: 
         enabled: true
         label:
           istio: ingressgateway-dev

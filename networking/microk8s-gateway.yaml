@@ -1,8 +1,8 @@
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: sro-gateway
-  namespace: sro
+  namespace: istio-system
 spec:
   selector:
     istio: ingressgateway
@@ -20,19 +20,46 @@ spec:
         - "api.shatteredrealmsonline.com"
         - "api.shatteredrealms.online"
     - hosts:
-      - "*"
+        - "shatteredrealmsonline.com"
+        - "shatteredrealms.online"
+        - "api.shatteredrealmsonline.com"
+        - "api.shatteredrealms.online"
       port:
         name: http-my-app
         number: 80
         protocol: HTTP
       tls:
         httpsRedirect: true
+    - hosts:
+        - "chat.grpc.api.shatteredrealmsonline.com"
+      port:
+        number: 8180
+        name: grpc-8180
+        protocol: grpc
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: Gateway
+# metadata:
+#   name: sro-grpc-gateway
+#   namespace: sro
+# spec:
+#   selector:
+#     istio: ingressgateway
+#   servers:
+#     - port:
+#         number: 8180
+#         name: grpc-8180
+#         protocol: GRPC
+#       hosts:
+#         - "chat.grpc.api.shatteredrealmsonline.com"
+#       tls:
+#         mode: PASSTHROUGH
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: sro-qa-gateway
-  namespace: sro-qa
+  namespace: istio-system
 spec:
   selector:
     istio: ingressgateway-qa
@@ -62,7 +89,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: sro-dev-gateway
-  namespace: sro-dev
+  namespace: istio-system
 spec:
   selector:
     istio: ingressgateway-dev

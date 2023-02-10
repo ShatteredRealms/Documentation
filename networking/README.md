@@ -13,7 +13,7 @@ Next install istio with [istioctl](https://istio.io/latest/docs/setup/getting-st
 AWS Version
 ```
 istioctl install \
-  --set profile=demo \
+  --set profile=minimal \
   --set values.gateways.istio-ingressgateway.type=NodePort \
   -f istio-operators.yaml
 ```
@@ -78,12 +78,12 @@ kubectl apply -f microk8s-gateway.yaml
 ```
 
 
-If you're using microk8s then you can use the `microk8s-ingress.yaml`
+<!-- If you're using microk8s then you can use the `microk8s-ingress.yaml` -->
 <!-- ```
 kubectl apply -f microk8s-ingress.yaml
 ``` -->
 
-Otherwise you'll need the following:
+If you're deploying to AWS you'll need the following:
 
 Create 2 public AWS certificates. One for the wildcard base domain(s) (ex. `domain.tld` and `*.domain.tld`). Then create another for the `api.domain.tld` and `*.api.domain.tld`. Add these ARNs to the `alb-ingress.yaml`.
 
@@ -98,7 +98,7 @@ cat alb-ingress.yaml | \
 
 Get the ingress loadbalanced endpoints and setup DNS
 
-If the load balancer is a hostname
+If using AWS, the load balancer is a hostname
 ```
 echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}") && \
@@ -115,7 +115,7 @@ echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 ```
 
 
-(Old) If the loadbalancer is an IP
+<!-- (Old) If the loadbalancer is an IP
 ```
 echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
 -o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
@@ -129,7 +129,7 @@ echo Development Main Ingress: $(kubectl get ingress gw-main-ingress -n sro-dev 
 -o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
 echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 -o jsonpath="{.status.loadBalancer.ingress[*].ip}")
-```
+``` -->
 
 Create the Virtual Services
 ```

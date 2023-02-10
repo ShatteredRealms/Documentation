@@ -7,7 +7,7 @@ spec:
   hosts:
   - pgpool-svc
   gateways:
-  - sro-gateway
+  - istio-system/sro-gateway
   tcp:
   - match:
     - port: 5432
@@ -24,7 +24,7 @@ spec:
   hosts:
   - pgpool-svc
   gateways:
-  - sro-qa-gateway
+  - istio-system/sro-qa-gateway
   tcp:
   - match:
     - port: 5432
@@ -41,7 +41,7 @@ spec:
   hosts:
   - pgpool-svc
   gateways:
-  - sro-dev-gateway
+  - istio-system/sro-dev-gateway
   tcp:
   - match:
     - port: 5432

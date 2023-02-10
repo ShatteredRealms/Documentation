@@ -24,7 +24,7 @@ spec:
         - name: chat
           image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/chat:0.0.1
           ports:
-          - containerPort: 8081
+          - containerPort: 8180
           imagePullPolicy: Always
           volumeMounts:
             - name: jwt-certs
@@ -81,7 +81,7 @@ metadata:
     service: chat
     api: grpc
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: chat
     version: v1

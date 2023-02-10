@@ -8,7 +8,7 @@ spec:
   - "api.shatteredrealmsonline.com"
   - "api.shatteredrealms.online"
   gateways:
-  - sro-gateway
+  - istio-system/sro-gateway
   http:
   - match:
     - uri:
@@ -49,6 +49,30 @@ spec:
       exposeHeaders:
         - grpc-status
         - grpc-message
+  - route:
+    - destination:
+        host: chat
+        port:
+          number: 8180
+    match:
+      - port: 8180
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: chat-grpc
+  namespace: sro
+spec:
+  hosts:
+  - "chat.grpc.api.shatteredrealmsonline.com"
+  gateways:
+  - sro-grpc-gateway
+  http:
+  - route:
+    - destination:
+        host: chat
+        port:
+          number: 8180
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -60,7 +84,7 @@ spec:
   - "qa.api.shatteredrealmsonline.com"
   - "qa.api.shatteredrealms.online"
   gateways:
-  - sro-qa-gateway
+  - istio-system/sro-qa-gateway
   http:
   - match:
     - uri:
@@ -112,7 +136,7 @@ spec:
   - "dev.api.shatteredrealmsonline.com"
   - "dev.api.shatteredrealms.online"
   gateways:
-  - sro-dev-gateway
+  - istio-system/sro-dev-gateway
   http:
   - match:
     - uri:

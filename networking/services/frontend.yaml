@@ -8,7 +8,7 @@ spec:
   - "shatteredrealmsonline.com"
   - "shatteredrealms.online"
   gateways:
-  - sro-gateway
+  - istio-system/sro-gateway
   http:
     - route:
         - destination:
@@ -30,7 +30,7 @@ spec:
   - "qa.shatteredrealmsonline.com"
   - "qa.shatteredrealms.online"
   gateways:
-  - sro-qa-gateway
+  - istio-system/sro-qa-gateway
   http:
     - route:
         - destination:
@@ -52,7 +52,7 @@ spec:
   - "dev.shatteredrealmsonline.com"
   - "dev.shatteredrealms.online"
   gateways:
-  - sro-dev-gateway
+  - istio-system/sro-dev-gateway
   http:
     - route:
         - destination:

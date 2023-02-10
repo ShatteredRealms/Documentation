@@ -8,7 +8,7 @@ spec:
   - "api.shatteredrealmsonline.com"
   - "api.shatteredrealms.online"
   gateways:
-  - sro-gateway
+  - istio-system/sro-gateway
   http:
   - match:
     - uri:
@@ -34,7 +34,7 @@ spec:
   - "qa.api.shatteredrealmsonline.com"
   - "qa.api.shatteredrealms.online"
   gateways:
-  - sro-qa-gateway
+  - istio-system/sro-qa-gateway
   http:
   - match:
     - uri:
@@ -60,7 +60,7 @@ spec:
   - "dev.api.shatteredrealmsonline.com"
   - "dev.api.shatteredrealms.online"
   gateways:
-  - sro-dev-gateway
+  - istio-system/sro-dev-gateway
   http:
   - match:
     - uri:
