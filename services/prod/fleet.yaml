@@ -24,6 +24,7 @@ spec:
           containers:
           - name: sro-server-prod
             image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/game:0.0.1
+            imagePullPolicy: Always
             env:
               - name: JWT_PUBLIC_KEY
                 valueFrom:
@@ -37,5 +38,7 @@ spec:
                     name: jwt-certs
                     key: jwt.key
                     optional: false
+            args:
+              - "-log"
           imagePullSecrets:
             - name: regcred

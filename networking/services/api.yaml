@@ -1,8 +1,8 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: chat
-  namespace: sro
+  name: sro-api
+  namespace: istio-system
 spec:
   hosts:
   - "api.shatteredrealmsonline.com"
@@ -10,6 +10,9 @@ spec:
   gateways:
   - istio-system/sro-gateway
   http:
+########
+# Chat #
+########
   - match:
     - uri:
         prefix: /chat/
@@ -19,7 +22,7 @@ spec:
       uri: '/'
     route:
     - destination:
-        host: chat
+        host: chat.sro.svc.cluster.local
         port:
           number: 80
       weight: 100
@@ -51,54 +54,11 @@ spec:
         - grpc-message
   - route:
     - destination:
-        host: chat
+        host: chat-grpc.sro.svc.cluster.local
         port:
           number: 8180
     match:
       - port: 8180
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: chat-grpc
-  namespace: sro
-spec:
-  hosts:
-  - "chat.grpc.api.shatteredrealmsonline.com"
-  gateways:
-  - sro-grpc-gateway
-  http:
-  - route:
-    - destination:
-        host: chat
-        port:
-          number: 8180
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: chat
-  namespace: sro-qa
-spec:
-  hosts:
-  - "qa.api.shatteredrealmsonline.com"
-  - "qa.api.shatteredrealms.online"
-  gateways:
-  - istio-system/sro-qa-gateway
-  http:
-  - match:
-    - uri:
-        prefix: /chat/
-    - uri:
-        exact: /chat
-    rewrite:
-      uri: '/'
-    route:
-    - destination:
-        host: chat
-        port:
-          number: 80
-      weight: 100
     corsPolicy:
       allowOrigin:
         - "*"
@@ -125,55 +85,51 @@ spec:
       exposeHeaders:
         - grpc-status
         - grpc-message
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: chat
-  namespace: sro-dev
-spec:
-  hosts:
-  - "dev.api.shatteredrealmsonline.com"
-  - "dev.api.shatteredrealms.online"
-  gateways:
-  - istio-system/sro-dev-gateway
-  http:
+############
+# Accounts #
+############
   - match:
     - uri:
-        prefix: /chat/
+        prefix: /accounts/
     - uri:
-        exact: /chat
+        exact: /accounts
     rewrite:
       uri: '/'
     route:
     - destination:
-        host: chat
+        host: accounts.sro.svc.cluster.local
         port:
           number: 80
       weight: 100
-    corsPolicy:
-      allowOrigin:
-        - "*"
-        - ".*"
-      allowMethods:
-        - POST
-        - GET
-        - OPTIONS
-        - PUT
-        - DELETE
-      allowHeaders:
-        - keep-alive
-        - user-agent
-        - cache-control
-        - content-type
-        - content-transfer-encoding
-        - x-accept-content-transfer-encoding
-        - x-accept-response-streaming
-        - x-user-agent
-        - x-grpc-web
-        - grpc-timeout
-        - authorization
-      maxAge: 1728s
-      exposeHeaders:
-        - grpc-status
-        - grpc-message
+##############
+# Characters #
+##############
+  - match:
+    - uri:
+        prefix: /characters/
+    - uri:
+        exact: /characters
+    rewrite:
+      uri: '/'
+    route:
+    - destination:
+        host: characters.sro.svc.cluster.local
+        port:
+          number: 80
+      weight: 100
+###############
+# Gamebackend #
+###############
+  - match:
+    - uri:
+        prefix: /gamebackend/
+    - uri:
+        exact: /gamebackend
+    rewrite:
+      uri: '/'
+    route:
+    - destination:
+        host: gamebackend.sro.svc.cluster.local
+        port:
+          number: 80
+      weight: 100

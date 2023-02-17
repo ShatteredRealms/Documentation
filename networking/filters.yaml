@@ -11,51 +11,101 @@ spec:
   - applyTo: HTTP_FILTER
     match:
       context: ANY
-      # listener:
-      #   filterChain:
-      #     filter:
-      #       name: "envoy.filters.network.http_connection_manager"
-      #       subFilter:
-      #         name: "envoy.filters.http.router"
     patch:
       operation: INSERT_BEFORE
       value:
         name: envoy.filters.http.grpc_web
         typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_web.v3.GrpcWeb          
-  # - applyTo: CLUSTER
-  #   match:
-  #     context: SIDECAR_OUTBOUND
-  #   patch:
-  #     operation: MERGE
-  #     value:
-  #       http2_protocol_options:
-  #         max_concurrent_streams: 47707
-  # - applyTo: CLUSTER
-  #   match:
-  #     context: SIDECAR_OUTBOUND
-  #   patch:
-  #     operation: MERGE
-  #     value:
-  #       typed_extension_protocol_options:
-  #         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
-  #           '@type': type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
-  #           common_http_protocol_options:
-  #             idle_timeout: 4s
-  #           use_downstream_protocol_config: 
-  #             http2_protocol_options: {}
-  #             http_protocol_options: {}
-  # - applyTo: CLUSTER
-  #   match:
-  #     context: SIDECAR_INBOUND
-  #   patch:
-  #     operation: MERGE
-  #     value:
-  #       typed_extension_protocol_options:
-  #         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
-  #           '@type': type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
-  #           common_http_protocol_options:
-  #             idle_timeout: 4s
-  #           use_downstream_protocol_config: 
-  #             http2_protocol_options: {}
-  #             http_protocol_options: {}
+          "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_web.v3.GrpcWeb
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-local-ratelimit-chat
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      app: chat
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: http_local_rate_limiter
+              token_bucket:
+                max_tokens: 1
+                tokens_per_fill: 1
+                fill_interval: 1s
+              filter_enabled:
+                runtime_key: local_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: local_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-local-rate-limit
+                    value: 'true'
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-local-ratelimit-microservice
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      sro: microservice
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            value:
+              stat_prefix: http_local_rate_limiter
+              token_bucket:
+                max_tokens: 10
+                tokens_per_fill: 1
+                fill_interval: 1s
+              filter_enabled:
+                runtime_key: local_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: local_rate_limit_enforced
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-local-rate-limit
+                    value: 'true'

@@ -87,8 +87,8 @@ spec:
   ports:
     - port: 80
       targetPort: 8082
-      protocol: TCP 
-      name: http-web
+      protocol: TCP
+      appProtocol: grpc
 ---
 apiVersion: v1
 kind: Service
@@ -106,5 +106,5 @@ spec:
   ports:
     - port: 80
       targetPort: 8082
-      protocol: TCP 
-      name: http-web
+      protocol: TCP
+      appProtocol: grpc

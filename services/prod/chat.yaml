@@ -74,26 +74,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: chat-grpc
-  namespace: sro
-  labels:
-    app: chat
-    service: chat
-    api: grpc
-spec:
-  type: ClusterIP
-  selector:
-    app: chat
-    version: v1
-  ports:
-    - port: 8180
-      targetPort: 8180
-      protocol: TCP
-      appProtocol: grpc
----
-apiVersion: v1
-kind: Service
-metadata:
   name: chat-headless
   namespace: sro
   labels:

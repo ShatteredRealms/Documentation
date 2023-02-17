@@ -21,11 +21,11 @@ spec:
                 name: status-port
                 protocol: TCP
               - port: 80
-                targetPort: 80
+                targetPort: 8080
                 name: http2
                 protocol: TCP
               - port: 443
-                targetPort: 443
+                targetPort: 8443
                 name: https
                 protocol: TCP
               - port: 15012
@@ -41,14 +41,14 @@ spec:
                 name: i-grpc-8180
                 protocol: TCP
 
-      - name: istio-ingressgateway-qa
-        namespace: istio-system
-        enabled: true
-        label:
-          istio: ingressgateway-qa
+      # - name: istio-ingressgateway-qa
+      #   namespace: istio-system
+      #   enabled: true
+      #   label:
+      #     istio: ingressgateway-qa
 
-      - name: istio-ingressgateway-dev
-        namespace: 
-        enabled: true
-        label:
-          istio: ingressgateway-dev
+      # - name: istio-ingressgateway-dev
+      #   namespace: 
+      #   enabled: true
+      #   label:
+      #     istio: ingressgateway-dev

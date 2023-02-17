@@ -22,7 +22,6 @@ Local Version
 ```
 istioctl install \
   --set profile=minimal \
-  --set values.global.proxy.holdApplicationUntilProxyStarts=true \
   -f istio-operators.yaml
 ```
 

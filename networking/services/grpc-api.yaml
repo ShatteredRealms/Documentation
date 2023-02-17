@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sro-grpc-api
+  namespace: istio-system
+spec:
+  hosts:
+  - "*.grpc.api.shatteredrealmsonline.com"
+  - "*.grpc.api.shatteredrealms.online"
+  - "grpc.api.shatteredrealmsonline.com"
+  - "grpc.api.shatteredrealms.online"
+  gateways:
+  - istio-system/sro-gateway
+  http:
+########
+# Chat #
+########
+  - route:
+    - destination:
+        host: chat.sro.svc.cluster.local
+        port:
+          number: 80
+    match:
+      - port: 8180

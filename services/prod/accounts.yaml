@@ -67,6 +67,7 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
+      appProtocol: grpc
       protocol: TCP
 ---
 apiVersion: v1
@@ -85,4 +86,5 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
+      appProtocol: grpc
       protocol: TCP
