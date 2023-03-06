@@ -1,5 +1,5 @@
 accounts:
-  remote: 
+  remote:
     host: 'accounts'
     port: 80
   mode: 'production'
@@ -7,7 +7,7 @@ accounts:
   db:
     master:
       host: 'postgres-postgresql-ha-pgpool'
-      password: 'ervJA7vFMn'
+      password: 'KY1BjHKcki'
 characters:
   remote:
     host: 'characters'
@@ -17,7 +17,7 @@ characters:
   db:
     master:
       host: 'postgres-postgresql-ha-pgpool'
-      password: 'ervJA7vFMn'
+      password: 'KY1BjHKcki'
 gamebackend:
   remote:
     host: 'gamebackend'
@@ -26,7 +26,7 @@ gamebackend:
   db:
     master:
       host: 'postgres-postgresql-ha-pgpool'
-      password: 'ervJA7vFMn'
+      password: 'KY1BjHKcki'
 chat:
   remote:
     host: 'chat'
@@ -38,15 +38,17 @@ chat:
   db:
     master:
       host: 'postgres-postgresql-ha-pgpool'
-      password: 'ervJA7vFMn'
+      password: 'KY1BjHKcki'
 agones:
   namespace: 'sro'
   allocator:
     remote:
       port: 443
-      host: ''
+      host: '75.61.95.171'
 uptrace:
   host: 'uptrace.dev'
   port: 443
-  id: '1041'
-  token: 'e_HKNPYAHi_gfERB08YhkQ'
+  id: '1039'
+  token: 'tS31BUtKNJgFvI29I8WGQA'
+keycloak:
+  baseUrl: https

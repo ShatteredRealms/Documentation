@@ -14,16 +14,14 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: "ingress-cert"
-      hosts:
+      hosts: &hosts
         - "shatteredrealmsonline.com"
         - "shatteredrealms.online"
         - "api.shatteredrealmsonline.com"
         - "api.shatteredrealms.online"
-    - hosts:
-        - "shatteredrealmsonline.com"
-        - "shatteredrealms.online"
-        - "api.shatteredrealmsonline.com"
-        - "api.shatteredrealms.online"
+        - "sso.shatteredrealmsonline.com"
+        - "sso.shatteredrealms.online"
+    - hosts: *hosts
       port:
         name: http-my-app
         number: 80

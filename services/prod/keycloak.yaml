@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: sro
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        # image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/keycloak:latest
+        image: quay.io/keycloak/keycloak:latest
+        imagePullPolicy: Always
+        args:
+          - "start"
+          - "--features=declarative-user-profile"
+        # Handled by reverse proxy
+        # args:
+          # - "--hostname-admin=admin.sso.shatteredrealmsonline.com"
+          # - "--hostname-strict-backchannel=true"
+        env:
+        - name: KEYCLOAK_ADMIN
+          value: "admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          value: "admin"
+        - name: KC_CONFIG_FILE
+          value: "/opt/keycloak/conf/keycloak.conf"
+        - name: KC_DB
+          value: "postgres"
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8080
+        volumeMounts:
+          - name: keycloak-conf
+            mountPath: "/opt/keycloak/conf/"
+            readOnly: true
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: keycloak-conf
+          secret:
+            secretName: keycloak-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: sro
+  labels:
+    app: keycloak
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    app: keycloak

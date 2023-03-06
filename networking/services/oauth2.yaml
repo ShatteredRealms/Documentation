@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sro-oauth2
+  namespace: istio-system
+spec:
+  hosts:
+  - "sso.shatteredrealmsonline.com"
+  - "sso.shatteredrealms.online"
+  - "admin.sso.shatteredrealmsonline.com"
+  - "admin.sso.shatteredrealms.online"
+  - "api.shatteredrealmsonline.com"
+  - "api.shatteredrealms.online"
+  gateways:
+  - istio-system/sro-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /oauth2
+    route:
+    - destination:
+        host: oauth-proxy.sro.svc.cluster.local
+        port:
+          number: 4180

@@ -9,6 +9,8 @@ spec:
   dnsNames:
   - shatteredrealmsonline.com
   - api.shatteredrealmsonline.com
+  - sso.shatteredrealmsonline.com
+  - "*.sso.shatteredrealmsonline.com"
   issuerRef:
     name: letsencrypt-prod-cluster
     kind: ClusterIssuer

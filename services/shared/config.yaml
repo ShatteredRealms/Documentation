@@ -4,3 +4,4 @@ metadata:
   name: sro-config
 data:
   config.yaml: '{{SRO_CONFIG}}'
+  

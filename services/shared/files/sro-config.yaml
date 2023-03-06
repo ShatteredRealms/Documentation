@@ -50,3 +50,6 @@ uptrace:
   port: 443
   id: '{{UPTRACE_ID}}'
   token: '{{UPTRACE_TOKEN}}'
+keycloak:
+  baseUrl: https://sso.shatteredrealmsonline.com
+  realm: default

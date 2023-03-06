@@ -4,8 +4,17 @@ metadata:
   namespace: istio-system
   name: sro-istiocontrolplane
 spec:
+  profile: default
   meshConfig:
     accessLogFile: /dev/stdout
+    extensionProviders:
+    - name: "oauth2-proxy"
+      envoyExtAuthzHttp:
+        service: "oauth-proxy.sro.svc.cluster.local"
+        port: "4180"
+        includeHeadersInCheck: ["authorization", "cookie","x-forwarded-access-token","x-forwarded-user","x-forwarded-email","x-forwarded-proto","proxy-authorization","user-agent","x-forwarded-host","from","x-forwarded-for","accept","x-auth-request-redirect"]
+        headersToUpstreamOnAllow: ["authorization", "path", "x-auth-request-user", "x-auth-request-email", "x-auth-request-access-token","x-forwarded-access-token"]
+        headersToDownstreamOnDeny: ["content-type", "set-cookie"]
   components:
     ingressGateways:
       - name: istio-ingressgateway

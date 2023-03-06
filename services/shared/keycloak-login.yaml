@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-login
+  namespace: sro
+type: kubernetes.io/basic-auth
+stringData:
+  username: sro-client
+  password: {{PASSWORD}}
