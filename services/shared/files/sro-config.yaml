@@ -1,13 +1,3 @@
-accounts:
-  remote: 
-    host: 'accounts'
-    port: 80
-  mode: 'production'
-  logLevel: 4
-  db:
-    master:
-      host: 'postgres-postgresql-ha-pgpool'
-      password: '{{ACCOUNTS_DB_PASSWORD}}'
 characters:
   remote:
     host: 'characters'
@@ -18,6 +8,10 @@ characters:
     master:
       host: 'postgres-postgresql-ha-pgpool'
       password: '{{CHARACTERS_DB_PASSWORD}}'
+  keycloak:
+    baseUrl: 'https://sso.shatteredrealmsonline.com'
+    clientId: '{{KEYCLOAK_CHARACTERS_CLIENT_ID}}'
+    clientSecret: '{{KEYCLOAK_CHARACTERS_CLIENT_SECRET}}'
 gamebackend:
   remote:
     host: 'gamebackend'
@@ -27,6 +21,10 @@ gamebackend:
     master:
       host: 'postgres-postgresql-ha-pgpool'
       password: '{{GAMEBACKEND_DB_PASSWORD}}'
+  keycloak:
+    baseUrl: 'https://sso.shatteredrealmsonline.com'
+    clientId: '{{KEYCLOAK_GAMEBACKEND_CLIENT_ID}}'
+    clientSecret: '{{KEYCLOAK_GAMEBACKEND_CLIENT_SECRET}}'
 chat:
   remote:
     host: 'chat'
@@ -39,6 +37,10 @@ chat:
     master:
       host: 'postgres-postgresql-ha-pgpool'
       password: '{{CHAT_DB_PASSWORD}}'
+  keycloak:
+    baseUrl: 'https://sso.shatteredrealmsonline.com'
+    clientId: '{{KEYCLOAK_CHAT_CLIENT_ID}}'
+    clientSecret: '{{KEYCLOAK_CHAT_CLIENT_SECRET}}'
 agones:
   namespace: '{{NAMESPACE}}'
   allocator:
@@ -46,10 +48,7 @@ agones:
       port: 443
       host: '{{AGONES_IP}}'
 uptrace:
-  host: 'uptrace.dev'
+  host: 'sso.shatteredrealmsonline.com'
   port: 443
-  id: '{{UPTRACE_ID}}'
-  token: '{{UPTRACE_TOKEN}}'
-keycloak:
-  baseUrl: https://sso.shatteredrealmsonline.com
-  realm: default
+  id: '{{SRO_PROD_PROJ_ID}}'
+  token: '{{SRO_PROD_PROJ_SECRET}}'

@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: characters
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/characters:0.0.1
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/characters:0.1.0gamebackend-7c98555f7-tlbg8
           ports:
           - containerPort: 8081
           imagePullPolicy: Always

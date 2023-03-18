@@ -32,52 +32,79 @@ helm upgrade --install --wait --reuse-values \
 To install the shared configurations and service, apply the configurations and replace all text in the surrounded in double brackets like: `{{}}`. \
 
 If using the script below, please set the the following environment variables: \
-`PROD_UPTRACE_TOKEN` to the Uptrace token and `PROD_UPTRACE_ID` to the Uptrace id. 
+`KEYCLOAK_CHARACTERS_CLIENT_ID` and `KEYCLOAK_CHARACTERS_CLIENT_SECRET` to the keycloak client id and secret respectively for the characters client. \
+`KEYCLOAK_CHAT_CLIENT_ID` and `KEYCLOAK_CHAT_CLIENT_SECRET` to the keycloak client id and secret respectively for the chat client. \
+`KEYCLOAK_GAMEBACKEND_CLIENT_ID` and `KEYCLOAK_GAMEBACKEND_CLIENT_SECRET` to the keycloak client id and secret respectively for the gamebackend client. \
+`KEYCLOAK_UPTRACE_CLIENT_SECRET` to the keycloak secret for the uptrace client.
 ```
 export CURRENT_FOLDER=$(pwd)
 pushd .
 cd $(mktemp -d)
 
-# Create jwt secrets
-openssl genrsa -out private.key 2048
-openssl rsa -in private.key -pubout -out public.key
-sed -i "s/PUBLIC/RSA PUBLIC/g" public.key
-cat $CURRENT_FOLDER/shared/certs.yaml | \
-  sed "s/{{JWT_PRIVATE_KEY}}/$(cat private.key | base64 -w 0)/g" | \
-  sed "s/{{JWT_PUBLIC_KEY}}/$(cat public.key | base64 -w 0)/g" | \
-  kubectl apply -n sro -f -
-# Create config secrets
+# Create uptrace config
+UPTRACE_JWT_SECRET_KEY=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+UPTRACE_PROJ_SECRET=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+UPTRACE_PROJ_ID=1
+SRO_PROD_PROJ_SECRET=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+SRO_PROD_PROJ_ID=1000
+CLICKHOUSE_HOST=$(kubectl get svc -n sro clickhouse-pv-log -o jsonpath={.status.loadBalancer.ingress[0].ip})
+CLICKHOUSE_PASSWORD=$(kubectl get secret clickhouse-credentials -n sro -o jsonpath={.data.password} | base64 -d)
+POSTGRES_PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+POSTGRES_HOST=postgres-postgresql-ha-pgpool.sro.svc.cluster.local
+POSTGRES_PORT=5432
 
-PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+cat $CURRENT_FOLDER/shared/files/uptrace.yaml | \
+  sed "s/{{UPTRACE_JWT_SECRET_KEY}}/$UPTRACE_JWT_SECRET_KEY/g" | \
+  sed "s/{{UPTRACE_PROJ_SECRET}}/$UPTRACE_PROJ_SECRET/g" | \
+  sed "s/{{UPTRACE_PROJ_ID}}/$UPTRACE_PROJ_ID/g" | \
+  sed "s/{{SRO_PROD_PROJ_SECRET}}/$SRO_PROD_PROJ_SECRET/g" | \
+  sed "s/{{SRO_PROD_PROJ_ID}}/$SRO_PROD_PROJ_ID/g" | \
+  sed "s/{{CLICKHOUSE_HOST}}/$CLICKHOUSE_HOST/g" | \
+  sed "s/{{CLICKHOUSE_PASSWORD}}/$CLICKHOUSE_PASSWORD/g" | \
+  sed "s/{{KEYCLOAK_UPTRACE_CLIENT_SECRET}}/$KEYCLOAK_UPTRACE_CLIENT_SECRET/g" | \
+  sed "s/{{POSTGRES_PASSWORD}}/$POSTGRES_PASSWORD/g" | \
+  sed "s/{{POSTGRES_HOST}}/$POSTGRES_HOST/g" | \
+  sed "s/{{POSTGRES_PORT}}/$POSTGRES_PORT/g" \
+  > uptrace.yaml
+kubectl create secret generic uptrace-conf -n sro --from-file=uptrace.yaml
+
+cat $CURRENT_FOLDER/shared/files/otel-collector.yaml | \
+  sed "s/{{UPTRACE_PROJ_SECRET}}/$UPTRACE_PROJ_SECRET/g" | \
+  sed "s/{{UPTRACE_PROJ_ID}}/$UPTRACE_PROJ_ID/g" \
+  > otel-collector.yaml
+kubectl create secret generic otel-collector-conf -n sro --from-file=otel-collector.yaml
+
+# Create sro config secrets
 cat $CURRENT_FOLDER/shared/files/sro-config.yaml | \
-  sed "s/{{ACCOUNTS_DB_PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{CHARACTERS_DB_PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{GAMEBACKEND_DB_PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{CHAT_DB_PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{KEYCLOAK_DB_PASSWORD}}/$PASSWORD/g" | \
+  sed "s/{{CHARACTERS_DB_PASSWORD}}/$POSTGRES_PASSWORD/g" | \
+  sed "s/{{GAMEBACKEND_DB_PASSWORD}}/$POSTGRES_PASSWORD/g" | \
+  sed "s/{{CHAT_DB_PASSWORD}}/$POSTGRES_PASSWORD/g" | \
+  sed "s/{{KEYCLOAK_DB_PASSWORD}}/$POSTGRES_PASSWORD/g" | \
   sed "s/{{NAMESPACE}}/sro/g" | \
   sed "s/{{AGONES_IP}}/$(kubectl get svc -n agones-system agones-allocator -o jsonpath={.status.loadBalancer.ingress[0].ip})/g" | \
-  sed "s/{{UPTRACE_TOKEN}}/$PROD_UPTRACE_TOKEN/g" | \
-  sed "s/{{UPTRACE_ID}}/$PROD_UPTRACE_ID/g" \
+  sed "s/{{UPTRACE_TOKEN}}/$SRO_PROD_PROJ_SECRET/g" | \
+  sed "s/{{UPTRACE_ID}}/$SRO_PROD_PROJ_ID/g" \
   > config.yaml
 cat $CURRENT_FOLDER/shared/config.yaml | \
   sed "s/{{SRO_CONFIG}}/$(cat config.yaml | base64 -w 0)/g" | \
   kubectl apply -n sro -f -
 rm -rf $CURRENT_FOLDER/shared/config.yaml
 
+
+# Keycloak config
 cat $CURRENT_FOLDER/shared/files/keycloak.conf | \
-  sed "s/{{KEYCLOAK_DB_PASSWORD}}/$PASSWORD/g" \
-  > $CURRENT_FOLDER/shared/keycloak.conf
-kubectl create secret generic keycloak-conf -n sro --from-file=$CURRENT_FOLDER/shared/ekycloak.conf
-rm -rf $CURRENT_FOLDER/shared/keycloak.conf
+  sed "s/{{POSTGRES_PASSWORD}}/$POSTGRES_PASSWORD/g" | \
+  sed "s/{{POSTGRES_HOST}}/$POSTGRES_HOST/g" | \
+  sed "s/{{POSTGRES_PORT}}/$POSTGRES_PORT/g" \
+  > keycloak.conf
+kubectl create secret generic keycloak-conf -n sro --from-file=keycloak.conf
 
 echo "You can delete folder $(pwd) now"
 popd
 ```
 
-## Accounts
-**This service requires shared services to be configured first**
-The account service requires an `accounts` database to be created. First create that for each environment.
+## Uptrace 
+The service requires an `uptrace` database to be created.
 ```
 kubectl exec -t -n sro pg-client \
   -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
@@ -86,12 +113,12 @@ kubectl exec -t -n sro pg-client \
     -p 5432 \
     -U postgres \
     -d postgres \
-    -c 'create database accounts;'"
+    -c 'create database uptrace;'"
 ```
 
-To install the account services, apply the configurations 
+To install the services, apply the configurations. 
 ```
-istioctl kube-inject -f prod/accounts.yaml | kubectl apply -f -
+istioctl kube-inject -f prod/uptrace.yaml | kubectl apply -f -
 ```
 
 ## Characters 

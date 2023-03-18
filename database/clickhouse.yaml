@@ -2,14 +2,16 @@ apiVersion: "clickhouse.altinity.com/v1"
 kind: "ClickHouseInstallation"
 metadata:
   name: "pv-log"
-  namespace: "{{NAMESPACE}}"
+  namespace: "sro"
 spec:
   configuration:
     users:
-      admin/k8s_secret_password_sha256_hex: "{{NAMESPACE}}/clickhouse-credentials/passwordsha256"
+      admin/k8s_secret_password: sro/clickhouse-credentials/password
       admin/profile: default
       admin/quota: default
-      admin/networks/ip: "0.0.0.0"
+      admin/networks/ip: 
+        - "0.0.0.0/0"
+        - "::/0"
     clusters:
       - name: "deployment-pv"
         templates:

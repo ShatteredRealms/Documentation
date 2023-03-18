@@ -14,6 +14,12 @@ spec:
           - "api.shatteredrealmsonline.com"  
         notPaths: 
           - "/oauth2/*"
+        methods:
+          - "GET"
+          - "POST"
+          - "DELETE"
+          - "PUT"
+          - "UPDATE"
   selector:
     matchLabels:
       app: istio-ingressgateway

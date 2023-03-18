@@ -21,6 +21,8 @@ spec:
         - "api.shatteredrealms.online"
         - "sso.shatteredrealmsonline.com"
         - "sso.shatteredrealms.online"
+        - "uptrace.shatteredrealmsonline.com"
+        - "uptrace.shatteredrealms.online"
     - hosts: *hosts
       port:
         name: http-my-app

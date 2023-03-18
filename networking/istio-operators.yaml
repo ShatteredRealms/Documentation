@@ -12,9 +12,33 @@ spec:
       envoyExtAuthzHttp:
         service: "oauth-proxy.sro.svc.cluster.local"
         port: "4180"
-        includeHeadersInCheck: ["authorization", "cookie","x-forwarded-access-token","x-forwarded-user","x-forwarded-email","x-forwarded-proto","proxy-authorization","user-agent","x-forwarded-host","from","x-forwarded-for","accept","x-auth-request-redirect"]
-        headersToUpstreamOnAllow: ["authorization", "path", "x-auth-request-user", "x-auth-request-email", "x-auth-request-access-token","x-forwarded-access-token"]
-        headersToDownstreamOnDeny: ["content-type", "set-cookie"]
+        includeHeadersInCheck: 
+          - "authorization"
+          - "cookie"
+          - "x-forwarded-access-token"
+          - "x-forwarded-user"
+          - "x-forwarded-email"
+          - "x-forwarded-proto"
+          - "proxy-authorization"
+          - "user-agent"
+          - "x-forwarded-host"
+          - "from"
+          - "x-forwarded-for"
+          - "accept"
+          - "x-auth-request-redirect"
+        headersToUpstreamOnAllow: 
+          - "authorization"
+          - "path"
+          - "x-auth-request-user"
+          - "x-auth-request-email"
+          - "x-auth-request-access-token"
+          - "x-forwarded-access-token"
+          - "cookie"
+        headersToDownstreamOnDeny: 
+          - "content-type"
+          - "set-cookie"
+        includeAdditionalHeadersInCheck:
+          X-Auth-Request-Redirect: '%REQ(x-forwarded-proto)%://%REQ(:authority)%%REQ(:path)%'
   components:
     ingressGateways:
       - name: istio-ingressgateway
@@ -48,6 +72,14 @@ spec:
               - port: 8180
                 targetPort: 8180
                 name: i-grpc-8180
+                protocol: TCP
+              - port: 8081
+                targetPort: 8081
+                name: i-grpc-8081
+                protocol: TCP
+              - port: 8082
+                targetPort: 8082
+                name: i-grpc-8082
                 protocol: TCP
 
       # - name: istio-ingressgateway-qa

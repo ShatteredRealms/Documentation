@@ -26,10 +26,10 @@ spec:
         port:
           number: 80
       weight: 100
-    corsPolicy:
-      allowOrigin:
-        - "*"
-        - ".*"
+    corsPolicy: &cors
+      allowOrigins:
+        - regex: ".*"
+        - regex: "^.*$"
       allowMethods:
         - POST
         - GET
@@ -59,48 +59,7 @@ spec:
           number: 8180
     match:
       - port: 8180
-    corsPolicy:
-      allowOrigin:
-        - "*"
-        - ".*"
-      allowMethods:
-        - POST
-        - GET
-        - OPTIONS
-        - PUT
-        - DELETE
-      allowHeaders:
-        - keep-alive
-        - user-agent
-        - cache-control
-        - content-type
-        - content-transfer-encoding
-        - x-accept-content-transfer-encoding
-        - x-accept-response-streaming
-        - x-user-agent
-        - x-grpc-web
-        - grpc-timeout
-        - authorization
-      maxAge: 1728s
-      exposeHeaders:
-        - grpc-status
-        - grpc-message
-############
-# Accounts #
-############
-  - match:
-    - uri:
-        prefix: /accounts/
-    - uri:
-        exact: /accounts
-    rewrite:
-      uri: '/'
-    route:
-    - destination:
-        host: accounts.sro.svc.cluster.local
-        port:
-          number: 80
-      weight: 100
+    corsPolicy: *cors
 ##############
 # Characters #
 ##############
@@ -117,6 +76,7 @@ spec:
         port:
           number: 80
       weight: 100
+    corsPolicy: *cors
 ###############
 # Gamebackend #
 ###############
@@ -133,3 +93,4 @@ spec:
         port:
           number: 80
       weight: 100
+    corsPolicy: *cors

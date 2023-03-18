@@ -24,41 +24,19 @@ Install clickhouse operator
 kubectl apply -f https://raw.githubusercontent.com/Altinity/clickhouse-operator/master/deploy/operator/clickhouse-operator-install-bundle.yaml
 ```
 
-Create passwords. The password may contain invalid characters for sed, so please rerun the password generations if it fails.
+Create password
 ```
-PASSWORD=$(base64 < /dev/urandom | head -c15)
+PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
 PASSWORD_SHA256=$(echo -n "$PASSWORD" | sha256sum | tr -d ' -')
+kubectl delete secret clickhouse-credentials -n sro
 cat clickhouse-credentials.yaml | \
   sed "s/{{PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{PASSWORD_SHA256}}/$PASSWORD_SHA256/g" | \
   kubectl apply -n sro -f -
-
-PASSWORD=$(base64 < /dev/urandom | head -c15)
-PASSWORD_SHA256=$(echo -n "$PASSWORD" | sha256sum | tr -d ' -')
-cat clickhouse-credentials.yaml | \
-  sed "s/{{PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{PASSWORD_SHA256}}/$PASSWORD_SHA256/g" | \
-  kubectl apply -n sro-qa -f -
-
-PASSWORD=$(base64 < /dev/urandom | head -c15)
-PASSWORD_SHA256=$(echo -n "$PASSWORD" | sha256sum | tr -d ' -')
-cat clickhouse-credentials.yaml | \
-  sed "s/{{PASSWORD}}/$PASSWORD/g" | \
-  sed "s/{{PASSWORD_SHA256}}/$PASSWORD_SHA256/g" | \
-  kubectl apply -n sro-dev -f -
 ```
 
 Deploy server with PVC
 ```
-cat clickhouse.yaml | \
-  sed "s/{{NAMESPACE}}/sro/g" | \
-  kubectl apply -f -
-cat clickhouse.yaml | \
-  sed "s/{{NAMESPACE}}/sro-dev/g" | \
-  kubectl apply -f -
-cat clickhouse.yaml | \
-  sed "s/{{NAMESPACE}}/sro-qa/g" | \
-  kubectl apply -f -
+kubectl apply -f clickhouse.yaml
 ```
 
 You can test the connections like

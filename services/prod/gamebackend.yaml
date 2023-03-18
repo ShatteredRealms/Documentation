@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: gamebackend
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gamebackend:latest
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gamebackend:0.1.0
           ports:
           - containerPort: 8082
           imagePullPolicy: Always

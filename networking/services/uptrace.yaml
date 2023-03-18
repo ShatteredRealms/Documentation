@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sro-uptrace
+  namespace: istio-system
+spec:
+  hosts:
+  - "uptrace.shatteredrealmsonline.com"
+  - "uptrace.shatteredrealms.online"
+  gateways:
+  - istio-system/sro-gateway
+  http:
+  - match:
+      - port: 443
+    route:
+    - destination:
+        host: uptrace.sro.svc.cluster.local
+        port:
+          number: 14318
+      weight: 100
+  - match:
+      - port: 14317
+    route:
+    - destination:
+        host: uptrace.sro.svc.cluster.local
+        port:
+          number: 14317
+      weight: 100

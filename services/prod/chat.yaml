@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: chat
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/chat:0.0.1
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/chat:0.1.0
           ports:
           - containerPort: 8180
           imagePullPolicy: Always
