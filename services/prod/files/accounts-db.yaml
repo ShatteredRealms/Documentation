@@ -1,6 +1,0 @@
-master:
-  host: 'postgres-postgresql-ha-pgpool'
-  port: '5432'
-  name: 'accounts'
-  user: 'postgres'
-  pass: '{{DATABASE_PASSWORD}}'

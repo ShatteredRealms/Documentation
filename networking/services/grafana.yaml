@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sro-grafana
+  namespace: istio-system
+spec:
+  hosts:
+  - "grafana.shatteredrealmsonline.com"
+  - "grafana.shatteredrealms.online"
+  gateways:
+  - istio-system/sro-gateway
+  http:
+  - match:
+      - port: 443
+    route:
+    - destination:
+        host: grafana.sro.svc.cluster.local
+        port:
+          number: 3000
+      weight: 100

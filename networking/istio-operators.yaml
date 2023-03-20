@@ -33,12 +33,10 @@ spec:
           - "x-auth-request-email"
           - "x-auth-request-access-token"
           - "x-forwarded-access-token"
-          - "cookie"
+          # - "cookie"
         headersToDownstreamOnDeny: 
           - "content-type"
           - "set-cookie"
-        includeAdditionalHeadersInCheck:
-          X-Auth-Request-Redirect: '%REQ(x-forwarded-proto)%://%REQ(:authority)%%REQ(:path)%'
   components:
     ingressGateways:
       - name: istio-ingressgateway

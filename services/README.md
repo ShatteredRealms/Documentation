@@ -102,6 +102,19 @@ kubectl create secret generic keycloak-conf -n sro --from-file=keycloak.conf
 echo "You can delete folder $(pwd) now"
 popd
 ```
+## Grafana
+The service requires a secret `grafana-ini` to be created. Copy the grafana keycloak oidc secret into the environment variable `KEYCLOAK_GRAFANA_SECRET` then run the following command.
+```
+CURR_DIR=$(pwd)
+TMP_DIR=$(mktemp -d)
+pushd $TMP_DIR
+cat $CURR_DIR/prod/files/grafana.ini | \
+  sed "s/{{KEYCLOAK_GRAFANA_SECRET}}/$KEYCLOAK_GRAFANA_SECRET/g" \
+  > grafana.ini
+kubectl create secret generic grafana-cnf -n sro --from-file=grafana.ini
+popd
+rm -rf "$TMP_DIR"
+```
 
 ## Uptrace 
 The service requires an `uptrace` database to be created.
