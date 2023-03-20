@@ -11,6 +11,10 @@ spec:
   - "admin.sso.shatteredrealms.online"
   - "api.shatteredrealmsonline.com"
   - "api.shatteredrealms.online"
+  - "prometheus.shatteredrealmsonline.com"
+  - "prometheus.shatteredrealms.online"
+  - "grafana.shatteredrealmsonline.com"
+  - "grafana.shatteredrealms.online"
   gateways:
   - istio-system/sro-gateway
   http:

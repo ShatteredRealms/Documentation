@@ -111,9 +111,16 @@ pushd $TMP_DIR
 cat $CURR_DIR/prod/files/grafana.ini | \
   sed "s/{{KEYCLOAK_GRAFANA_SECRET}}/$KEYCLOAK_GRAFANA_SECRET/g" \
   > grafana.ini
+kubectl delete secret grafana-cnf -n sro
 kubectl create secret generic grafana-cnf -n sro --from-file=grafana.ini
 popd
 rm -rf "$TMP_DIR"
+```
+
+Then deploy the service
+```
+istioctl kube-inject -f prod/grafana.yaml | kubectl apply -f -
+
 ```
 
 ## Uptrace 
@@ -200,7 +207,7 @@ istioctl kube-inject -f prod/gamebackend.yaml | kubectl apply -f -
 Deploy keycloak with
 
 ```bash
-kubectl apply -f prod/keycloak.yaml
+istioctl kube-inject -f prod/keycloak.yaml | kubectl apply -f -
 ```
 
 Login with the default username `admin` and password `admin`. Change the password and create a new realm with the resource file `shared/files/keycloak-sro.json` with the realm name `default`.
