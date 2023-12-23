@@ -16,7 +16,7 @@ helm install agones --namespace agones-system \
   --create-namespace \
   --set "gameservers.namespaces={sro}" \
   --set "agones.featureGates=PlayerTracking=true" \
-  --set "agones.image.tag=1.30.0" \
+  --set "agones.image.tag=1.33.0" \
   agones/agones
 ```
 
@@ -49,7 +49,7 @@ SRO_PROD_PROJ_SECRET=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
 SRO_PROD_PROJ_ID=1000
 CLICKHOUSE_HOST=$(kubectl get svc -n sro clickhouse-pv-log -o jsonpath={.status.loadBalancer.ingress[0].ip})
 CLICKHOUSE_PASSWORD=$(kubectl get secret clickhouse-credentials -n sro -o jsonpath={.data.password} | base64 -d)
-POSTGRES_PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d)
+POSTGRES_PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d)
 POSTGRES_HOST=postgres-postgresql-ha-pgpool.sro.svc.cluster.local
 POSTGRES_PORT=5432
 
@@ -107,7 +107,7 @@ popd
 The service requires an `uptrace` database to be created.
 ```
 kubectl exec -t -n sro pg-client \
-  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d) \
   psql \
     -h postgres-postgresql-ha-pgpool \
     -p 5432 \
@@ -125,7 +125,7 @@ istioctl kube-inject -f prod/uptrace.yaml | kubectl apply -f -
 The account service requires an `characters` database to be created. First create that for each environment.
 ```
 kubectl exec -t -n sro pg-client \
-  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d) \
   psql \
     -h postgres-postgresql-ha-pgpool \
     -p 5432 \
@@ -143,7 +143,7 @@ istioctl kube-inject -f prod/characters.yaml | kubectl apply -f -
 The account service requires an `chat` database to be created. First create that for each environment.
 ```
 kubectl exec -t -n sro pg-client \
-  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.postgresql-password}' | base64 -d) \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d) \
   psql \
     -h postgres-postgresql-ha-pgpool \
     -p 5432 \
@@ -178,12 +178,36 @@ kubectl delete secret allocator-tls-ca -n sro
 kubectl get secret allocator-tls-ca -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro/' | kubectl apply -f -
 ```
 
+create the database
+```
+kubectl exec -t -n sro pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database gamebackend;'"
+```
+
 To install the gamebackend services, simply apply the configurations
 ```
 istioctl kube-inject -f prod/gamebackend.yaml | kubectl apply -f -
 ```
 
 ## Keycloak
+Create the database for keycloak
+```
+kubectl exec -t -n sro pg-client \
+  -- bash -c "PGPASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d) \
+  psql \
+    -h postgres-postgresql-ha-pgpool \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c 'create database keycloak;'"
+```
+
 Deploy keycloak with
 
 ```bash
@@ -198,3 +222,4 @@ PASSWORD=<PASSWORD HERE>
 cat shared/keycloak-login.yaml | \
   sed "s/{{PASSWORD}}/$PASSWORD/g" | \
   kubectl apply -f -
+```

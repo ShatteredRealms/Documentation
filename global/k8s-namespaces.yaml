@@ -5,19 +5,19 @@ metadata:
   # labels:
   #   istio-injection:
   #     enabled
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: sro-qa
-  # labels:
-  #   istio-injection:
-  #     enabled
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: sro-dev
-  # labels:
-  #   istio-injection:
-  #     enabled
+# ---
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: sro-qa
+#   # labels:
+#   #   istio-injection:
+#   #     enabled
+# ---
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: sro-dev
+#   # labels:
+#   #   istio-injection:
+#   #     enabled

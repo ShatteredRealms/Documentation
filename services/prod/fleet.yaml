@@ -19,26 +19,15 @@ spec:
       template:
         metadata:
           labels:
-            world: "Scene_Demo"
+            map: "Scene_Demo"
+            dimension: "default"
         spec:
           containers:
           - name: sro-server-prod
             image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/game:0.0.1
             imagePullPolicy: Always
-            env:
-              - name: JWT_PUBLIC_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: jwt-certs
-                    key: jwt.key.pub
-                    optional: false
-              - name: JWT_PRIVATE_KEY 
-                valueFrom:
-                  secretKeyRef:
-                    name: jwt-certs
-                    key: jwt.key
-                    optional: false
             args:
+              - "/Game/SF_Base/Scenes/Scene_Demo"
               - "-log"
           imagePullSecrets:
             - name: regcred
