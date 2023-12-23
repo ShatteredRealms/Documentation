@@ -21,10 +21,17 @@ spec:
         ports:
         - containerPort: 4180
         args:
-          - "--upstream=static://200"
-          - "--set-xauthrequest=true"
-          - "--pass-host-header=true"
-          - "--pass-access-token=true"
+          - --upstream=static://200
+          - --set-xauthrequest=true
+          - --pass-host-header=true
+          - --pass-access-token=true
+          - --whitelist-domain=.shatteredrealmsonline.com
+          - --set-authorization-header=true
+          - --pass-access-token=true
+          - --pass-authorization-header=true
+          - --request-logging=true
+          - --auth-logging=true
+          - --standard-logging=true
         env:
           # OIDC Config
           - name: "OAUTH2_PROXY_PROVIDER"

@@ -36,6 +36,8 @@ spec:
           value: "/opt/keycloak/conf/keycloak.conf"
         - name: KC_DB
           value: "postgres"
+        - name: KEYCLOAK_EXTRA_ARGS_PREPEND
+          value: "--spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true"
         ports:
         - name: http
           containerPort: 8080

@@ -23,6 +23,8 @@ spec:
         - "sso.shatteredrealms.online"
         - "uptrace.shatteredrealmsonline.com"
         - "uptrace.shatteredrealms.online"
+        - "grafana.shatteredrealmsonline.com"
+        - "grafana.shatteredrealms.online"
     - hosts: *hosts
       port:
         name: http-my-app
