@@ -72,7 +72,7 @@ spec:
       uri: '/'
     route:
     - destination:
-        host: characters.sro.svc.cluster.local
+        host: character.sro.svc.cluster.local
         port:
           number: 80
       weight: 100

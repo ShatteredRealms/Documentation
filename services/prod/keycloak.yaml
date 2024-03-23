@@ -17,12 +17,11 @@ spec:
     spec:
       containers:
       - name: keycloak
-        # image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/keycloak:latest
         image: quay.io/keycloak/keycloak:latest
         imagePullPolicy: Always
         args:
           - "start"
-          - "--features=declarative-user-profile"
+          - "--verbose"
         # Handled by reverse proxy
         # args:
           # - "--hostname-admin=admin.sso.shatteredrealmsonline.com"
@@ -49,8 +48,6 @@ spec:
           - name: keycloak-conf
             mountPath: "/opt/keycloak/conf/"
             readOnly: true
-      imagePullSecrets:
-        - name: regcred
       volumes:
         - name: keycloak-conf
           secret:
@@ -68,5 +65,8 @@ spec:
   - name: http
     port: 80
     targetPort: 8080
+  - name: smtp
+    port: 587
+    targetPort: 587
   selector:
     app: keycloak

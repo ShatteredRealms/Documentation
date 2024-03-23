@@ -27,23 +27,12 @@ spec:
           - containerPort: 8180
           imagePullPolicy: Always
           volumeMounts:
-            - name: jwt-certs
-              mountPath: "/etc/sro/auth/"
-              readOnly: true
             - name: sro-config
               mountPath: "/etc/sro/"
               readOnly: true
       imagePullSecrets:
         - name: regcred
       volumes:
-        - name: jwt-certs
-          secret:
-            secretName: jwt-certs
-            items:
-              - key: jwt.key
-                path: key
-              - key: jwt.key.pub
-                path: key.pub
         - name: sro-config
           secret:
             secretName: sro-config 

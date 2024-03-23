@@ -27,9 +27,6 @@ spec:
           - containerPort: 8082
           imagePullPolicy: Always
           volumeMounts:
-            - name: jwt-certs
-              mountPath: "/etc/sro/auth/"
-              readOnly: true
             - name: agones-client-certs
               mountPath: "/etc/sro/auth/agones/client"
               readOnly: true
@@ -42,14 +39,6 @@ spec:
       imagePullSecrets:
         - name: regcred
       volumes:
-        - name: jwt-certs
-          secret:
-            secretName: jwt-certs
-            items:
-              - key: jwt.key
-                path: key
-              - key: jwt.key.pub
-                path: key.pub
         - name: agones-client-certs
           secret:
             secretName: allocator-client.default
@@ -108,3 +97,56 @@ spec:
       targetPort: 8082
       protocol: TCP
       appProtocol: grpc
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sro-default-agones-role
+  namespace: sro
+rules:
+- apiGroups:
+    - "agones.dev"
+    - "autoscaling.agones.dev"
+    - "allocation.agones.dev"
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sro-default-agones-binding
+  namespace: sro
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sro-default-agones-role
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro:default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sro-default-agones
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones-allocator
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro:default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sro-default-agones-allocator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro:default

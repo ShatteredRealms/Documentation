@@ -23,8 +23,8 @@ spec:
         - "sso.shatteredrealms.online"
         - "uptrace.shatteredrealmsonline.com"
         - "uptrace.shatteredrealms.online"
-        - "grafana.shatteredrealmsonline.com"
-        - "grafana.shatteredrealms.online"
+        - "kibana.shatteredrealmsonline.com"
+        - "kibana.shatteredrealms.online"
     - hosts: *hosts
       port:
         name: http-my-app
@@ -37,6 +37,18 @@ spec:
       port:
         number: 8180
         name: grpc-8180
+        protocol: grpc
+    - hosts:
+        - "characters.grpc.api.shatteredrealmsonline.com"
+      port:
+        number: 8081
+        name: grpc-8081
+        protocol: grpc
+    - hosts:
+        - "gamebackend.grpc.api.shatteredrealmsonline.com"
+      port:
+        number: 8082
+        name: grpc-8082
         protocol: grpc
 # ---
 # apiVersion: networking.istio.io/v1beta1

@@ -1,6 +1,6 @@
 # Networking
 ## Kubernetes
-Kubernetes uses [istio](https://istio.io/) to route traffic. The configuration files can be found here. The network is split between 3 main namespaces: `sro`, `sro-qa`, `sro-dev` for the 3 main piplines production, quality assurance and development respectively. 
+Kubernetes uses [istio](https://istio.io/) to route traffic. The configuration files can be found here. The network is split between 2 main namespaces: `sro` and `sro-qa`. 
 
 ### Prereqesuites
 * All global configurations is done.
@@ -10,7 +10,8 @@ For AWS, configure the [Load Balancer Controller](https://kubernetes-sigs.github
 
 Next install istio with [istioctl](https://istio.io/latest/docs/setup/getting-started/)
 
-AWS Version
+#### Setup Istio
+##### AWS Only
 ```
 istioctl install \
   --set profile=minimal \
@@ -18,21 +19,15 @@ istioctl install \
   -f istio-operators.yaml
 ```
 
-Local Version
+##### Microk8s Only
 ```
 istioctl install \
   --set profile=minimal \
   -f istio-operators.yaml
 ```
 
-<!-- Setup istio injection for the 3 namespaces if it already isn't
-```
-kubectl label ns sro istio-injection=enabled --overwrite
-kubectl label ns sro-qa istio-injection=enabled --overwrite
-kubectl label ns sro-dev istio-injection=enabled --overwrite
-``` -->
-
-Generate a certificate for self-signing certificates in the 3 environments.
+##### All
+Generate a certificate for self-signing certificates.
 ```
 pushd .
 cd $(mktemp -d)
@@ -47,10 +42,6 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -keyout certs/qa-key.pem -out certs/qa-cert.pem -subj "/CN=shatteredrealmsonline.com" \
   -addext "subjectAltName=DNS:*.shatteredrealmsonline.com"
 
-openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-  -keyout certs/dev-key.pem -out certs/dev-cert.pem -subj "/CN=shatteredrealmsonline.com" \
-  -addext "subjectAltName=DNS:*.shatteredrealmsonline.com"
-
 kubectl create -n sro secret generic istio-tls-secret \
   --from-file=key=certs/key.pem \
   --from-file=cert=certs/cert.pem
@@ -59,30 +50,15 @@ kubectl create -n sro-qa secret generic istio-qa-tls-secret \
   --from-file=key=certs/qa-key.pem \
   --from-file=cert=certs/qa-cert.pem
 
-kubectl create -n sro-dev secret generic istio-dev-tls-secret \
-  --from-file=key=certs/dev-key.pem \
-  --from-file=cert=certs/dev-cert.pem
-
 echo "You can delete folder $(pwd) to remove used certs"
 popd 
 ```
 
-Apply the gateway if not using microk8s
+#### Apply the gateway
+##### AWS 
 ```
-kubectl apply -f gateway.yaml
+kubectl apply -f aws-gateway.yaml
 ```
-Otherwise apply the microk8s gateway
-```
-kubectl apply -f microk8s-gateway.yaml
-```
-
-
-<!-- If you're using microk8s then you can use the `microk8s-ingress.yaml` -->
-<!-- ```
-kubectl apply -f microk8s-ingress.yaml
-``` -->
-
-If you're deploying to AWS you'll need the following:
 
 Create 2 public AWS certificates. One for the wildcard base domain(s) (ex. `domain.tld` and `*.domain.tld`). Then create another for the `api.domain.tld` and `*.api.domain.tld`. Add these ARNs to the `alb-ingress.yaml`.
 
@@ -95,9 +71,7 @@ cat alb-ingress.yaml | \
   kubectl apply -f -
 ```
 
-Get the ingress loadbalanced endpoints and setup DNS
-
-If using AWS, the load balancer is a hostname
+Get the ingress loadbalanced endpoints and setup DNS. The load balancer is a hostname
 ```
 echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}") && \
@@ -114,22 +88,14 @@ echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 ```
 
 
-<!-- (Old) If the loadbalancer is an IP
+##### Microk8s
 ```
-echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
--o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
-echo Production API Ingress: $(kubectl get ingress gw-api-ingress -n sro \
--o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
-echo Quality-Assurance Main Ingress: $(kubectl get ingress gw-main-ingress -n sro-qa \
--o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
-echo Quality-Assurance API Ingress: $(kubectl get ingress gw-api-ingress -n sro-qa \
--o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
-echo Development Main Ingress: $(kubectl get ingress gw-main-ingress -n sro-dev \
--o jsonpath="{.status.loadBalancer.ingress[*].ip}") && \
-echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
--o jsonpath="{.status.loadBalancer.ingress[*].ip}")
-``` -->
+kubectl apply -f microk8s-gateway.yaml
+kubectl apply -f microk8s-clusterissuer.yaml
+kubectl apply -f microk8s-certs.yaml
+```
 
+##### All
 Create the Virtual Services
 ```
 kubectl apply -f services/.

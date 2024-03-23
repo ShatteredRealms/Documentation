@@ -1,49 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: characters
+  name: character
   namespace: sro
   labels:
-    app: characters
+    app: character
     version: v1
     sro: microservice
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: characters
+      app: character
       version: v1
   template:
     metadata:
       labels:
-        app: characters
+        app: character
         version: v1
         sro: microservice
     spec:
       containers:
-        - name: characters
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/characters:0.1.0gamebackend-7c98555f7-tlbg8
+        - name: character
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/character:0.1.0
           ports:
           - containerPort: 8081
           imagePullPolicy: Always
           volumeMounts:
-            - name: jwt-certs
-              mountPath: "/etc/sro/auth/"
-              readOnly: true
             - name: sro-config
               mountPath: "/etc/sro/"
               readOnly: true
       imagePullSecrets:
         - name: regcred
       volumes:
-        - name: jwt-certs
-          secret:
-            secretName: jwt-certs
-            items:
-              - key: jwt.key
-                path: key
-              - key: jwt.key.pub
-                path: key.pub
         - name: sro-config
           secret:
             secretName: sro-config 
@@ -54,15 +43,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: characters
+  name: character
   namespace: sro
   labels:
-    app: characters
-    service: characters
+    app: character
+    service: character
 spec:
   type: ClusterIP
   selector:
-    app: characters
+    app: character
     version: v1
   ports:
     - port: 80
@@ -73,15 +62,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: characters-headless
+  name: character-headless
   namespace: sro
   labels:
-    app: characters
-    headless: characters
+    app: character
+    headless: character
 spec:
   clusterIP: None
   selector:
-    app: characters
+    app: character
     version: v1
   ports:
     - port: 80

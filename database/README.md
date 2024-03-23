@@ -10,12 +10,10 @@ Install using the defaults for bitnami postgresql high availability chart as wel
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install postgres bitnami/postgresql-ha -n sro
+helm install postgres bitnami/postgresql-ha -n sro --set persistence.storageClass=nvme-hostpath
 helm install postgres bitnami/postgresql-ha -n sro-qa
-helm install postgres bitnami/postgresql-ha -n sro-dev
 kubectl apply -f psql-client.yaml -n sro
 kubectl apply -f psql-client.yaml -n sro-qa
-kubectl apply -f psql-client.yaml -n sro-dev
 ```
 
 ## ClickHouse
@@ -32,11 +30,18 @@ kubectl delete secret clickhouse-credentials -n sro
 cat clickhouse-credentials.yaml | \
   sed "s/{{PASSWORD}}/$PASSWORD/g" | \
   kubectl apply -n sro -f -
+PASSWORD=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+PASSWORD_SHA256=$(echo -n "$PASSWORD" | sha256sum | tr -d ' -')
+kubectl delete secret clickhouse-credentials -n sro-qa
+cat clickhouse-credentials.yaml | \
+  sed "s/{{PASSWORD}}/$PASSWORD/g" | \
+  kubectl apply -n sro-qa -f -
 ```
 
 Deploy server with PVC
 ```
-kubectl apply -f clickhouse.yaml
+kubectl apply -f clickhouse.yaml -n sro
+kubectl apply -f clickhouse.yaml -n sro-qa
 ```
 
 You can test the connections like
@@ -50,6 +55,20 @@ clickhouse-client \
 Get the passwords
 ```
 echo "Prod: $(kubectl get secret clickhouse-credentials -n sro -o jsonpath={.data.password} | base64 -d)"; \
-echo "Dev: $(kubectl get secret clickhouse-credentials -n sro-qa -o jsonpath={.data.password} | base64 -d)"; \
-echo "Qa: $(kubectl get secret clickhouse-credentials -n sro-dev -o jsonpath={.data.password} | base64 -d)"
+echo "Qa: $(kubectl get secret clickhouse-credentials -n sro-qa -o jsonpath={.data.password} | base64 -d)"
+```
+
+## MongoDB
+Install with helm
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install mongodb bitnami/mongodb -n sro --set persistence.storageClass=nvme-hostpath
+helm install mongodb bitnami/mongodb -n sro-qa
+```
+
+Get root password
+```
+MONGODB_PROD_ROOT_PASSWORD=$(kubectl get secret -n sro mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
+MONGODB_QA_ROOT_PASSWORD=$(kubectl get secret -n sro-qa mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
 ```

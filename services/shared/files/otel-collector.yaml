@@ -20,9 +20,6 @@ receivers:
       memory:
       network:
       paging:
-  jaeger:
-    protocols:
-      grpc:
 
 processors:
   resourcedetection:
@@ -46,7 +43,7 @@ service:
   #     level: DEBUG
   pipelines:
     traces:
-      receivers: [otlp, jaeger]
+      receivers: [otlp]
       processors: [batch]
       exporters: [otlp/uptrace, logging]
     metrics:
