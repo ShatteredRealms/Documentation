@@ -1,0 +1,33 @@
+apiVersion: "agones.dev/v1"
+kind: Fleet
+metadata:
+  namespace: sro-qa
+  name: main-fleet 
+spec:
+  replicas: 2
+  template:
+    spec:
+      ports:
+      - name: default
+        portPolicy: Dynamic
+        containerPort: 7777
+      health:
+        disabled: false
+        periodSeconds: 10
+        failureThreshold: 3
+        initialDelaySeconds: 300
+      template:
+        metadata:
+          labels:
+            map: "Scene_Demo"
+            dimension: "dimension"
+        spec:
+          containers:
+          - name: sro-server-prod
+            image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/game:0.0.4
+            imagePullPolicy: Always
+            args:
+              - "/Game/SF_Base/Scenes/Scene_Demo"
+              - "-log"
+          imagePullSecrets:
+            - name: regcred

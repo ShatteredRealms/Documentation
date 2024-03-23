@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat
+  namespace: sro-qa
+  labels:
+    app: chat
+    version: v1
+    sro: microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: chat
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: chat
+        version: v1
+        sro: microservice
+    spec:
+      containers:
+        - name: chat
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/chat:0.1.0
+          ports:
+          - containerPort: 8180
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: sro-config
+              mountPath: "/etc/sro/"
+              readOnly: true
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: sro-config
+          secret:
+            secretName: sro-config 
+            items:
+              - key: config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat
+  namespace: sro-qa
+  labels:
+    app: chat
+    service: chat
+    api: http
+spec:
+  type: ClusterIP
+  selector:
+    app: chat
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 8180
+      protocol: TCP
+      appProtocol: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-headless
+  namespace: sro-qa
+  labels:
+    app: chat
+    headless: chat
+spec:
+  clusterIP: None
+  selector:
+    app: chat
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 8180
+      protocol: TCP
+      appProtocol: grpc
