@@ -24,7 +24,11 @@ helm install agones --namespace agones-system \
   --create-namespace \
   --set "gameservers.namespaces={sro}" \
   --set "agones.featureGates=PlayerTracking=true" \
+<<<<<<< HEAD
   --set "agones.image.tag=1.39.0" \
+=======
+  --set "agones.image.tag=1.33.0" \
+>>>>>>> 1a2bcde8027684eae11c830616d220d6b991d575
   agones/agones
 ```
 
@@ -172,8 +176,15 @@ export CURRENT_FOLDER=$(pwd)
 pushd .
 cd $(mktemp -d)
 
-NAMESPACE=sro
-POSTGRES_PASSWORD=$(kubectl get secret -n $NAMESPACE postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d)
+# Create uptrace config
+UPTRACE_JWT_SECRET_KEY=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+UPTRACE_PROJ_SECRET=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+UPTRACE_PROJ_ID=1
+SRO_PROD_PROJ_SECRET=$(< /dev/urandom tr -dc _A-Za-z0-9 | head -c${1:-32};echo;)
+SRO_PROD_PROJ_ID=1000
+CLICKHOUSE_HOST=$(kubectl get svc -n sro clickhouse-pv-log -o jsonpath={.status.loadBalancer.ingress[0].ip})
+CLICKHOUSE_PASSWORD=$(kubectl get secret clickhouse-credentials -n sro -o jsonpath={.data.password} | base64 -d)
+POSTGRES_PASSWORD=$(kubectl get secret -n sro postgres-postgresql-ha-postgresql -o jsonpath='{.data.password}' | base64 -d)
 POSTGRES_HOST=postgres-postgresql-ha-pgpool.sro.svc.cluster.local
 POSTGRES_PORT=5432
 MONGO_PASSWORD=$(kubectl get secret -n $NAMESPACE mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 -d)
@@ -401,10 +412,10 @@ istioctl kube-inject -f prod/grafana.yaml | kubectl apply -f -
 
 ```
 
-
 ## Prometheus
 The service requires a config-map `prometheus-cnf` to be created. Save the keycloak oidc client secret into `PROMETHEUS_CLIENT_SECRET` and create it with the following command:
 ```
+<<<<<<< HEAD
 kubectl delete -f prod/files/prometheus-config-map.yaml
 cat prod/files/prometheus-config-map.yaml | \
   sed "s/{{PROMETHEUS_CLIENT_SECRET}}/$PROMETHEUS_CLIENT_SECRET/g" |

@@ -80,4 +80,8 @@ spec:
       maxAge: 1728s
       exposeHeaders:
         - grpc-status
+<<<<<<< HEAD
         - grpc-message
+=======
+        - grpc-message
+>>>>>>> 1a2bcde8027684eae11c830616d220d6b991d575

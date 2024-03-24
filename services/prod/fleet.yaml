@@ -20,7 +20,7 @@ spec:
         metadata:
           labels:
             map: "Scene_Demo"
-            dimension: "dimension"
+            dimension: "default"
         spec:
           containers:
           - name: sro-server-prod
