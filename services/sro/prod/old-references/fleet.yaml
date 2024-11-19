@@ -1,0 +1,40 @@
+# apiVersion: "agones.dev/v1"
+# kind: Fleet
+# metadata:
+#   namespace: sro-gs
+#   name: main-fleet 
+#   labels:
+#     world: "Scene_Demo"
+#     dimension: "asdf"
+# spec:
+#   replicas: 2
+#   template:
+#     spec:
+#       ports:
+#       - name: default
+#         portPolicy: Dynamic
+#         containerPort: 7777
+#       health:
+#         disabled: false
+#         periodSeconds: 10
+#         failureThreshold: 3
+#         initialDelaySeconds: 300
+#       template:
+#         spec:
+#           containers:
+#           - name: sro-server-prod
+#             image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/game:0.0.5
+#             imagePullPolicy: Always
+#             args:
+#               - "/Game/SF_Base/Scenes/Scene_Demo"
+#               - "-log"
+#             env:
+#               - name: SRO_AUTH_CLIENT_SECRET
+#                 valueFrom:
+#                   secretKeyRef:
+#                     name: keycloak-gameserver
+#                     key: secret
+#               - name: SRO_DIMENSION
+#                 value: "default"
+#           imagePullSecrets:
+#             - name: regcred

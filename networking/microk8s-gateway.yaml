@@ -23,8 +23,10 @@ spec:
         - "sso.shatteredrealms.online"
         - "uptrace.shatteredrealmsonline.com"
         - "uptrace.shatteredrealms.online"
-        - "kibana.shatteredrealmsonline.com"
-        - "kibana.shatteredrealms.online"
+        - "grafana.shatteredrealmsonline.com"
+        - "grafana.shatteredrealmsonline"
+        - "kiali.shatteredrealmsonline.com"
+        - "kiali.shatteredrealmsonline"
     - hosts: *hosts
       port:
         name: http-my-app
@@ -39,7 +41,7 @@ spec:
         name: grpc-8180
         protocol: grpc
     - hosts:
-        - "characters.grpc.api.shatteredrealmsonline.com"
+        - "character.grpc.api.shatteredrealmsonline.com"
       port:
         number: 8081
         name: grpc-8081
@@ -50,81 +52,3 @@ spec:
         number: 8082
         name: grpc-8082
         protocol: grpc
-# ---
-# apiVersion: networking.istio.io/v1beta1
-# kind: Gateway
-# metadata:
-#   name: sro-grpc-gateway
-#   namespace: sro
-# spec:
-#   selector:
-#     istio: ingressgateway
-#   servers:
-#     - port:
-#         number: 8180
-#         name: grpc-8180
-#         protocol: GRPC
-#       hosts:
-#         - "chat.grpc.api.shatteredrealmsonline.com"
-#       tls:
-#         mode: PASSTHROUGH
-# ---
-# apiVersion: networking.istio.io/v1alpha3
-# kind: Gateway
-# metadata:
-#   name: sro-qa-gateway
-#   namespace: istio-system
-# spec:
-#   selector:
-#     istio: ingressgateway-qa
-#   servers:
-#     - port:
-#         number: 443
-#         name: https-443
-#         protocol: HTTPS
-#       tls:
-#         mode: SIMPLE
-#         credentialName: "ingress-cert"
-#       hosts:
-#         - "qa.shatteredrealmsonline.com"
-#         - "qa.shatteredrealms.online"
-#         - "qa.api.shatteredrealmsonline.com"
-#         - "qa.api.shatteredrealms.online"
-#     - hosts:
-#       - "*"
-#       port:
-#         name: http-my-app
-#         number: 80
-#         protocol: HTTP
-#       tls:
-#         httpsRedirect: true
-# ---
-# apiVersion: networking.istio.io/v1alpha3
-# kind: Gateway
-# metadata:
-#   name: sro-dev-gateway
-#   namespace: istio-system
-# spec:
-#   selector:
-#     istio: ingressgateway-dev
-#   servers:
-#     - port:
-#         number: 443
-#         name: https-443
-#         protocol: HTTPS
-#       tls:
-#         mode: SIMPLE
-#         credentialName: "ingress-cert"
-#       hosts:
-#         - "dev.shatteredrealmsonline.com"
-#         - "dev.shatteredrealms.online"
-#         - "dev.api.shatteredrealmsonline.com"
-#         - "dev.api.shatteredrealms.online"
-#     - hosts:
-#       - "*"
-#       port:
-#         name: http-my-app
-#         number: 80
-#         protocol: HTTP
-#       tls:
-#         httpsRedirect: true

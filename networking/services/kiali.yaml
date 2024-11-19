@@ -1,12 +1,12 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: sro-grafana
+  name: kiali
   namespace: istio-system
 spec:
   hosts:
-  - "grafana.shatteredrealmsonline.com"
-  - "grafana.shatteredrealms.online"
+  - "kiali.shatteredrealmsonline.com"
+  - "kiali.shatteredrealms.online"
   gateways:
   - istio-system/sro-gateway
   http:
@@ -14,7 +14,7 @@ spec:
       - port: 443
     route:
     - destination:
-        host: grafana.observability.svc.cluster.local
+        host: kiali.istio-system.svc.cluster.local
         port:
-          number: 80
+          number: 20001
       weight: 100

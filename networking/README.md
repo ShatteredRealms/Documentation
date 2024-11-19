@@ -12,7 +12,7 @@ Next install istio with [istioctl](https://istio.io/latest/docs/setup/getting-st
 
 #### Setup Istio
 ##### AWS Only
-```
+```bash
 istioctl install \
   --set profile=minimal \
   --set values.gateways.istio-ingressgateway.type=NodePort \
@@ -20,7 +20,7 @@ istioctl install \
 ```
 
 ##### Microk8s Only
-```
+```bash
 istioctl install \
   --set profile=minimal \
   -f istio-operators.yaml
@@ -28,7 +28,7 @@ istioctl install \
 
 ##### All
 Generate a certificate for self-signing certificates.
-```
+```bash
 pushd .
 cd $(mktemp -d)
 mkdir -p certs
@@ -56,14 +56,14 @@ popd
 
 #### Apply the gateway
 ##### AWS 
-```
+```bash
 kubectl apply -f aws-gateway.yaml
 ```
 
 Create 2 public AWS certificates. One for the wildcard base domain(s) (ex. `domain.tld` and `*.domain.tld`). Then create another for the `api.domain.tld` and `*.api.domain.tld`. Add these ARNs to the `alb-ingress.yaml`.
 
 Apply the ALB ingress and reaplce `{{SRO_ARN}}` and `{{SRO_API_ARN}}` with the arns for the two certs just created.
-```
+```bash
 cat alb-ingress.yaml | \
   sed \
     -e "s|{{SRO_ARN}}|$(aws acm list-certificates --output text --query 'CertificateSummaryList[?DomainName==`shatteredrealmsonline.com`].CertificateArn')|g" \
@@ -72,7 +72,7 @@ cat alb-ingress.yaml | \
 ```
 
 Get the ingress loadbalanced endpoints and setup DNS. The load balancer is a hostname
-```
+```bash
 echo Production Main Ingress: $(kubectl get ingress gw-main-ingress -n sro \
 -o jsonpath="{.status.loadBalancer.ingress[*].hostname}") && \
 echo Production API Ingress: $(kubectl get ingress gw-api-ingress -n sro \
@@ -89,7 +89,7 @@ echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 
 
 ##### Microk8s
-```
+```bash
 kubectl apply -f microk8s-gateway.yaml
 kubectl apply -f microk8s-clusterissuer.yaml
 kubectl apply -f microk8s-certs.yaml
@@ -97,6 +97,6 @@ kubectl apply -f microk8s-certs.yaml
 
 ##### All
 Create the Virtual Services
-```
+```bash
 kubectl apply -f services/.
 ```

@@ -1,0 +1,180 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamebackend
+  namespace: sro
+  labels:
+    app: gamebackend
+    version: v1
+    sro: microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gamebackend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: gamebackend
+        version: v1
+        sro: microservice
+    spec:
+      containers:
+        - name: gamebackend
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gamebackend:0.1.0
+          ports:
+          - containerPort: 8082
+          imagePullPolicy: Always
+          env:
+            - name: SRO_GAMEBACKEND_POSTGRES_MASTER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-postgresql-ha-postgresql
+                  key: password
+            - name: SRO_GAMEBACKEND_KEYCLOAK_ID
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gamebackend
+                  key: id
+            - name: SRO_GAMEBACKEND_KEYCLOAK_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gamebackend
+                  key: secret
+            - name: SRO_REDIS_MASTER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-redis-cluster
+                  key: redis-password
+          volumeMounts:
+            # - name: agones-client-certs
+            #   mountPath: "/etc/sro/auth/agones/client"
+            #   readOnly: true
+            # - name: agones-ca
+            #   mountPath: "/etc/sro/auth/agones/ca"
+            #   readOnly: true
+            - name: sro-config
+              mountPath: "/etc/sro/"
+              readOnly: true
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        # - name: agones-client-certs
+        #   secret:
+        #     secretName: allocator-client.default
+        #     items:
+        #       - key: tls.crt
+        #         path: cert
+        #       - key: tls.key
+        #         path: key
+        # - name: agones-ca
+        #   secret:
+        #     secretName: allocator-tls-ca
+        #     items:
+        #       - key: tls-ca.crt
+        #         path: ca
+        - name: sro-config
+          configMap:
+            name: sro-config 
+            items:
+              - key: config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamebackend
+  namespace: sro
+  labels:
+    app: gamebackend
+    service: gamebackend
+spec:
+  type: ClusterIP
+  selector:
+    app: gamebackend
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 8082
+      protocol: TCP
+      appProtocol: grpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamebackend-headless
+  namespace: sro
+  labels:
+    app: gamebackend
+    headless: gamebackend
+spec:
+  clusterIP: None
+  selector:
+    app: gamebackend
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 8082
+      protocol: TCP
+      appProtocol: grpc
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sro-default-agones-role
+rules:
+- apiGroups:
+    - "agones.dev"
+    - "autoscaling.agones.dev"
+    - "allocation.agones.dev"
+  resources: ["*"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sro-default-agones-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sro-default-agones-role
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro:default
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro-gs:default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sro-default-agones
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones-allocator
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro:default
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro-gs:default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sro-default-agones-allocator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro:default
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: system:serviceaccount:sro-gs:default

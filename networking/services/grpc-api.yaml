@@ -80,8 +80,37 @@ spec:
       maxAge: 1728s
       exposeHeaders:
         - grpc-status
-<<<<<<< HEAD
         - grpc-message
-=======
+  - route:
+    - destination:
+        host: character.sro.svc.cluster.local
+        port:
+          number: 80
+    match:
+      - port: 8081
+    corsPolicy:
+      allowOrigin:
+        - "*"
+        - ".*"
+      allowMethods:
+        - POST
+        - GET
+        - OPTIONS
+        - PUT
+        - DELETE
+      allowHeaders:
+        - keep-alive
+        - user-agent
+        - cache-control
+        - content-type
+        - content-transfer-encoding
+        - x-accept-content-transfer-encoding
+        - x-accept-response-streaming
+        - x-user-agent
+        - x-grpc-web
+        - grpc-timeout
+        - authorization
+      maxAge: 1728s
+      exposeHeaders:
+        - grpc-status
         - grpc-message
->>>>>>> 1a2bcde8027684eae11c830616d220d6b991d575

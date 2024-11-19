@@ -1,0 +1,44 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: keycloak
+  namespace: auth
+spec:
+  instances: 1
+  image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/keycloak:24.0.3b
+  imagePullSecrets:
+    - name: regcred
+  db:
+    vendor: postgres
+    passwordSecret:
+      name: postgres-postgresql-ha-postgresql
+      key: password
+    host: postgres-postgresql-ha-pgpool.auth.svc
+    database: keycloak
+    port: 5432
+    poolInitialSize: 1
+    poolMinSize: 2
+    poolMaxSize: 3
+  http:
+    httpEnabled: true
+    httpPort: 8080
+  hostname:
+    hostname: sso.shatteredrealmsonline.com
+  proxy:
+    headers: xforwarded
+  additionalOptions:
+    - name: db-username
+      value: postgres
+    - name: health-enabled
+      value: "true"
+    - name: metrics-enabled
+      value: "true"
+    - name: log-level 
+      value: DEBUG
+    - name: features
+      value: "preview,admin-fine-grained-authz"
+  unsupported:
+    podTemplate:
+      spec:
+        containers:
+          - imagePullPolicy: Always

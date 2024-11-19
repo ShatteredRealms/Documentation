@@ -1,0 +1,39 @@
+persistence:
+  storageClass: "nvme-hostpath"
+
+metrics:
+  enabled: true
+  resources:
+    requests:
+      cpu: 1
+      memory: 512Mi
+    limits:
+      cpu: 3
+      memory: 1024Mi
+
+witness:
+  resources:
+    requests:
+      cpu: 1
+      memory: 512Mi
+    limits:
+      cpu: 3
+      memory: 1024Mi
+
+pgpool:
+  resources:
+    requests:
+      cpu: 1.5
+      memory: 4096Mi
+    limits:
+      cpu: 4
+      memory: 11288Mi
+
+postgresql:
+  resources:
+    requests:
+      cpu: 1.5
+      memory: 4096Mi
+    limits:
+      cpu: 6
+      memory: 11288Mi

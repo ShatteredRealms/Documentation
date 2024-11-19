@@ -14,18 +14,18 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /js/
-    - uri:
-        prefix: /realms/
-    - uri:
-        prefix: /resources/
-    - uri:
-        prefix: /admin/
-    - uri:
-        exact: /robots.txt
+        prefix: /
+    # - uri:
+    #     prefix: /realms/
+    # - uri:
+    #     prefix: /resources/
+    # - uri:
+    #     prefix: /admin/
+    # - uri:
+    #     exact: /robots.txt
     route:
     - destination:
-        host: keycloak.sro.svc.cluster.local
+        host: keycloak-service.auth.svc.cluster.local
         port:
-          number: 80
+          number: 8080
       weight: 100

@@ -52,22 +52,14 @@ spec:
       exposeHeaders:
         - grpc-status
         - grpc-message
-  - route:
-    - destination:
-        host: chat-grpc.sro.svc.cluster.local
-        port:
-          number: 8180
-    match:
-      - port: 8180
-    corsPolicy: *cors
 ##############
 # Characters #
 ##############
   - match:
     - uri:
-        prefix: /characters/
+        prefix: /character/
     - uri:
-        exact: /characters
+        exact: /character
     rewrite:
       uri: '/'
     route:

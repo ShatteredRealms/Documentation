@@ -1,0 +1,34 @@
+persistence:
+  storageClass: "nvme-hostpath"
+
+redis:
+  resources:
+    requests:
+      cpu: 2
+      memory: 4096Mi
+    limits:
+      cpu: 6
+      memory: 11288Mi
+
+updateJob:
+  resources:
+    requests:
+      cpu: 1.5
+      memory: 512Mi
+    limits:
+      cpu: 3
+      memory: 1024Mi
+  
+metrics:
+  enbaled: true
+  resources:
+    requests:
+      cpu: 1.5
+      memory: 512Mi
+    limits:
+      cpu: 3
+      memory: 1024Mi
+
+serviceMonitor:
+  enabled: true
+

@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecr-registry-helper-cm
+  namespace: default
+data:
+  AWS_REGION: "us-east-1"
+  DOCKER_SECRET_NAME: regcred 
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-default
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: regcred-secrets-access
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  resourceNames: ["regcred"] 
+  verbs: ["delete"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["create"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: default-role-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: sa-default 
+  namespace: default 
+  apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  name: regcred-secrets-access
+  apiGroup: ""
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ecr-registry-helper
+  namespace: default
+spec:
+  schedule: "0 */10 * * *" 
+  successfulJobsHistoryLimit: 2
+  suspend: false
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: sa-default 
+          containers:
+          - name: ecr-registry-helper
+            image: omarxs/awskctl:v1.0
+            imagePullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: ecr-registry-helper-secrets 
+              - configMapRef:
+                  name: ecr-registry-helper-cm 
+            command:
+              - /bin/bash
+              - -c
+              - |-
+                ECR_TOKEN="$(aws ecr get-login-password --region ${AWS_REGION})"
+
+                NAMESPACE_NAME=sro 
+                kubectl delete secret --ignore-not-found $DOCKER_SECRET_NAME -n $NAMESPACE_NAME
+                kubectl create secret docker-registry $DOCKER_SECRET_NAME --docker-server=https://${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com --docker-username=AWS --docker-password=${ECR_TOKEN} --namespace=$NAMESPACE_NAME
+                echo "Secret was successfully updated for $NAMESPACE_NAME on $(date)"
+
+                NAMESPACE_NAME=sro-gs 
+                kubectl delete secret --ignore-not-found $DOCKER_SECRET_NAME -n $NAMESPACE_NAME
+                kubectl create secret docker-registry $DOCKER_SECRET_NAME --docker-server=https://${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com --docker-username=AWS --docker-password=${ECR_TOKEN} --namespace=$NAMESPACE_NAME
+                echo "Secret was successfully updated for $NAMESPACE_NAME on $(date)"
+
+                NAMESPACE_NAME=auth
+                kubectl delete secret --ignore-not-found $DOCKER_SECRET_NAME -n $NAMESPACE_NAME
+                kubectl create secret docker-registry $DOCKER_SECRET_NAME --docker-server=https://${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com --docker-username=AWS --docker-password=${ECR_TOKEN} --namespace=$NAMESPACE_NAME
+                echo "Secret was successfully updated for $NAMESPACE_NAME on $(date)"
+          restartPolicy: Never

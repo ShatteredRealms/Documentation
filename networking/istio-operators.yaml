@@ -6,11 +6,16 @@ metadata:
 spec:
   profile: default
   meshConfig:
+    enableTracing: true
     accessLogFile: /dev/stdout
     extensionProviders:
+    - name: "otel"
+      opentelemetry:
+        service: observability/otel-collector-cluster-opentelemetry-collector
+        port: 4317
     - name: "oauth2-proxy"
       envoyExtAuthzHttp:
-        service: "oauth-proxy.sro.svc.cluster.local"
+        service: "oauth2-proxy.sro.svc.cluster.local"
         port: "4180"
         includeHeadersInCheck: 
           - "authorization"
@@ -38,6 +43,9 @@ spec:
           - "content-type"
           - "set-cookie"
   components:
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: true
     ingressGateways:
       - name: istio-ingressgateway
         namespace: istio-system
@@ -46,6 +54,7 @@ spec:
           istio: ingressgateway
         k8s:
           service:
+            externalTrafficPolicy: Local
             ports:
               - port: 15021
                 targetPort: 15021
@@ -79,13 +88,24 @@ spec:
                 targetPort: 8082
                 name: i-grpc-8082
                 protocol: TCP
-
-      # - name: istio-ingressgateway-qa
+              - port: 14317
+                targetPort: 14317
+                name: i-grpc-uptrace
+                protocol: TCP
+              - port: 14318
+                targetPort: 14318
+                name: i-http-uptrace
+                protocol: TCP
+      - name: istio-ingressgateway-qa
+        namespace: istio-system
+        enabled: true
+        label:
+          istio: ingressgateway-qa
+      # - name: istio-ingressgateway-obs
       #   namespace: istio-system
       #   enabled: true
       #   label:
-      #     istio: ingressgateway-qa
-
+      #     istio: ingressgateway-obs
       # - name: istio-ingressgateway-dev
       #   namespace: 
       #   enabled: true

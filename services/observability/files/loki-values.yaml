@@ -1,0 +1,130 @@
+loki:
+  storage:
+    type: s3
+    s3:
+      region: us-east-1
+      endpoint: 's3.us-east-1.amazonaws.com'
+      accessKeyId: '${GRAFANA_LOKI_S3_ACCESKEYID}'
+      secretAccessKey: '${GRAFANA_LOKI_S3_SECRETACCESSKEY}'
+      s3: s3://us-east-1/sro-loki
+      http_config:
+        insecure_skip_verify: true
+    bucketNames:
+      chunks: 'sro-loki-chunks'
+      ruler: 'sro-loki-ruler'
+      admin: 'sro-loki-admin'
+  # -- Enable tracing
+  tracing:
+    enabled: false
+  auth_enabled: false
+
+monitoring:
+  # Recording rules for monitoring Loki, required for some dashboards
+  rules:
+    # -- If enabled, create PrometheusRule resource with Loki recording rules
+    enabled: true
+    # -- Include alerting rules
+    alerting: true
+  # ServiceMonitor configuration
+  serviceMonitor:
+    # -- If enabled, ServiceMonitor resources for Prometheus Operator are created
+    enabled: true
+  # Self monitoring determines whether Loki should scrape its own logs.
+  # This feature currently relies on the Grafana Agent Operator being installed,
+  # which is installed by default using the grafana-agent-operator sub-chart.
+  # It will create custom resources for GrafanaAgent, LogsInstance, and PodLogs to configure
+  # scrape configs to scrape its own logs with the labels expected by the included dashboards.
+  selfMonitoring:
+    enabled: true
+# Configuration for the write pod(s)
+write:
+  affinity: []
+  # -- Additional CLI args for the backend
+  extraArgs:
+    - "-config.expand-env=true"
+  # -- Environment variables to add to the write pods
+  extraEnv:
+    - name: GRAFANA_LOKI_S3_ENDPOINT 
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-endpoint
+    - name: GRAFANA_LOKI_S3_ACCESKEYID 
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-accessKeyId
+    - name: GRAFANA_LOKI_S3_SECRETACCESSKEY
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-secretAccessKey
+# Configuration for the read pod(s)
+read:
+  affinity: []
+  # -- Additional CLI args for the read
+  extraArgs:
+    - "-config.expand-env=true"
+  # -- Containers to add to the read pods
+  extraContainers: []
+  # -- Environment variables to add to the read pods
+  extraEnv:
+    - name: GRAFANA_LOKI_S3_ENDPOINT 
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-endpoint
+    - name: GRAFANA_LOKI_S3_ACCESKEYID 
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-accessKeyId
+    - name: GRAFANA_LOKI_S3_SECRETACCESSKEY
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-secretAccessKey
+# Configuration for the backend pod(s)
+backend:
+  affinity: []
+  # -- Additional CLI args for the backend
+  extraArgs:
+    - "-config.expand-env=true"
+  # -- Environment variables to add to the backend pods
+  extraEnv:
+    - name: GRAFANA_LOKI_S3_ENDPOINT 
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-endpoint
+    - name: GRAFANA_LOKI_S3_ACCESKEYID 
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-accessKeyId
+    - name: GRAFANA_LOKI_S3_SECRETACCESSKEY
+      valueFrom:
+        secretKeyRef:
+          name: loki-s3-secrets
+          key: grafana-loki-s3-secretAccessKey
+
+# Configuration for the memberlist service
+memberlist:
+  service:
+    publishNotReadyAddresses: false
+# Configuration for the gateway
+gateway:
+  # -- Specifies whether the gateway should be enabled
+  enabled: true
+  # @default -- Hard node and soft zone anti-affinity
+  affinity: []
+metrics_generator:
+  # Ring configuration
+  ring:
+    kvstore:
+      store: memberlist
+  # Processor-specific configuration
+  processor:
+    service_graphs:
+    span_metrics:
+  registry:

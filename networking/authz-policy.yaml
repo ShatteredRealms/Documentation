@@ -11,7 +11,8 @@ spec:
   - to:
     - operation:   
         hosts:
-          - "api.shatteredrealmsonline.com"
+          - "grafana.shatteredrealmsonline.com"
+          - "uptrace.shatteredrealmsonline.com"
         notPaths: 
           - "/oauth2/*"
         methods:
