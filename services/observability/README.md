@@ -31,6 +31,7 @@ Install with helm
 ```bash
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
+helm upgrade --install grafana-agent grafana/grafana-agent-operator -n observability
 helm upgrade --install grafana grafana/grafana -n observability -f files/grafana-values.yaml
 helm upgrade --install loki grafana/loki -n observability -f files/loki-values.yaml
 helm upgrade --install tempo grafana/tempo-distributed -n observability -f files/tempo-values.yaml

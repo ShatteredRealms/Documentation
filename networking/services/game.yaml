@@ -1,0 +1,44 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sro-game
+  namespace: istio-system
+spec:
+  hosts:
+  - "game.shatteredrealmsonline.com"
+  - "game.shatteredrealms.online"
+  gateways:
+  - istio-system/sro-gateway
+  http:
+  - match:
+      - uri:
+          prefix: /ping/
+      - uri:
+          exact: /ping
+    route:
+    - destination:
+        host: agones-ping-http-service.agones-system.svc.cluster.local
+        port:
+          number: 80
+      weight: 100
+  - match:
+      - port: 50000
+        uri:
+          prefix: /ping/
+      - port: 50000
+        uri:
+          exact: /ping
+    route:
+    - destination:
+        host: agones-ping-udp-service.agones-system.svc.cluster.local
+        port:
+          number: 80
+      weight: 100
+  - match:
+      - port: 80
+    route:
+    - destination:
+        host: agones-allocator.agones-system.svc.cluster.local
+        port:
+          number: 80
+      weight: 100

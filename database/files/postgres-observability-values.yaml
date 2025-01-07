@@ -2,7 +2,7 @@ metrics:
   enabled: true
   resources:
     requests:
-      cpu: .75
+      cpu: .5
       memory: 512Mi
     limits:
       cpu: 2
@@ -11,7 +11,7 @@ metrics:
 witness:
   resources:
     requests:
-      cpu: .75
+      cpu: .5
       memory: 512Mi
     limits:
       cpu: 3
@@ -20,8 +20,8 @@ witness:
 pgpool:
   resources:
     requests:
-      cpu: 1
-      memory: 4096Mi
+      cpu: .5
+      memory: 1024Mi
     limits:
       cpu: 4
       memory: 6144Mi
@@ -29,8 +29,8 @@ pgpool:
 postgresql:
   resources:
     requests:
-      cpu: 1
-      memory: 4096Mi
+      cpu: .5
+      memory: 1024Mi
     limits:
       cpu: 4
       memory: 6144Mi

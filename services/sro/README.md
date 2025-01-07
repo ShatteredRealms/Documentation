@@ -112,18 +112,13 @@ To remove
 kubectl delete -f prod/frontend.yaml
 ```
 
-## Game Server
-Apply the production fleet
-```bash
-kubectl apply -f prod/fleet.yaml
-```
-
 ## Gamebackend
 Copy the allocator ca cert to the namespace `sro`.
 ```bash
 kubectl delete secret allocator-tls-ca -n sro --ignore-not-found
 kubectl delete secret allocator-tls-ca -n sro-qa --ignore-not-found
 kubectl get secret allocator-tls-ca -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro/' | kubectl apply -f -
+kubectl get secret allocator-client.default -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro/' | kubectl apply -f -
 kubectl get secret allocator-tls-ca -n agones-system -o yaml | sed 's/namespace: .*/namespace: sro-qa/' | kubectl apply -f -
 ```
 Setup database

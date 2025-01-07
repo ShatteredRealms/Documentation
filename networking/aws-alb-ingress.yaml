@@ -8,23 +8,20 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-port: status-port
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
     alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: |
-      {
-        "Type": "redirect", 
-        "RedirectConfig": { 
-          "Protocol": "HTTPS", 
-          "Port": "443", 
-          "StatusCode": "HTTP_301"
-        }
-      }
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}, {"HTTP": 8080}, {"HTTP": 8081}, {"HTTP": 8082}, {"HTTP": 8180}]'
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/load-balanacer-name: sro-external-ingress
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '443'
     alb.ingress.kubernetes.io/certificate-arn: "{{SRO_ARN}}"
-  name: gw-main-ingress
-  namespace: sro
+  name: sro-external-ingress
+  namespace: istio-system
+  labels:
+    app: sro-external-ingress
 spec:
+  ingressClassName: alb
   rules:
-  - host: "shatteredrealmsonline.com"
-    http: &prod_http
+  - http: &https
       paths: 
       - backend:
           service:
@@ -33,196 +30,63 @@ spec:
               number: 443
         path: /
         pathType: Prefix
-  - host: "shatteredrealms.online"
-    http: *prod_http
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
-    alb.ingress.kubernetes.io/healthcheck-port: status-port
-    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: |
-      {
-        "Type": "redirect", 
-        "RedirectConfig": { 
-          "Protocol": "HTTPS", 
-          "Port": "443", 
-          "StatusCode": "HTTP_301"
-        }
-      }
-    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_ARN}}"
-  name: gw-main-ingress
-  namespace: sro-qa
-spec:
-  rules:
-  - host: "qa.shatteredrealmsonline.com"
-    http: &qa_http
-      paths: 
-      - backend:
-          service:
-            name: istio-ingressgateway-qa
-            port: 
-              number: 443
-        path: /
-        pathType: Prefix
-  - host: "qa.shatteredrealms.online"
-    http: *qa_http
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
-    alb.ingress.kubernetes.io/healthcheck-port: status-port
-    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: |
-      {
-        "Type": "redirect", 
-        "RedirectConfig": { 
-          "Protocol": "HTTPS", 
-          "Port": "443", 
-          "StatusCode": "HTTP_301"
-        }
-      }
-    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_ARN}}"
-  name: gw-main-ingress
-  namespace: sro-dev
-spec:
-  rules:
-  - host: "dev.shatteredrealmsonline.com"
-    http: &dev_http
-      paths: 
-      - backend:
-          service:
-            name: istio-ingressgateway-dev
-            port: 
-              number: 443
-        path: /
-        pathType: Prefix
-  - host: "dev.shatteredrealms.online"
-    http: *dev_http
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
-    alb.ingress.kubernetes.io/healthcheck-port: status-port
-    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: |
-      {
-        "Type": "redirect", 
-        "RedirectConfig": { 
-          "Protocol": "HTTPS", 
-          "Port": "443", 
-          "StatusCode": "HTTP_301"
-        }
-      }
-    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_API_ARN}}"
-  name: gw-api-ingress
-  namespace: sro
-spec:
-  rules:
-  - host: "api.shatteredrealmsonline.com"
-    http: &prod_http
-      paths: 
       - backend:
           service:
             name: istio-ingressgateway
             port: 
-              number: 443
+              number: 80
         path: /
         pathType: Prefix
-  - host: "api.shatteredrealms.online"
-    http: *prod_http
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
-    alb.ingress.kubernetes.io/healthcheck-port: status-port
-    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: |
-      {
-        "Type": "redirect", 
-        "RedirectConfig": { 
-          "Protocol": "HTTPS", 
-          "Port": "443", 
-          "StatusCode": "HTTP_301"
-        }
-      }
-    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_API_ARN}}"
-  name: gw-api-ingress
-  namespace: sro-qa
-spec:
-  rules:
-  - host: "qa.api.shatteredrealmsonline.com"
-    http: &qa_http
-      paths: 
       - backend:
           service:
-            name: istio-ingressgateway-qa
+            name: istio-ingressgateway
             port: 
-              number: 443
+              number: 8081
         path: /
         pathType: Prefix
-  - host: "qa.api.shatteredrealms.online"
-    http: *qa_http
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
-    alb.ingress.kubernetes.io/healthcheck-port: status-port
-    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/actions.ssl-redirect: |
-      {
-        "Type": "redirect", 
-        "RedirectConfig": { 
-          "Protocol": "HTTPS", 
-          "Port": "443", 
-          "StatusCode": "HTTP_301"
-        }
-      }
-    alb.ingress.kubernetes.io/certificate-arn: "{{SRO_API_ARN}}"
-  name: gw-api-ingress
-  namespace: sro-dev
-spec:
-  rules:
-  - host: "dev.api.shatteredrealmsonline.com"
-    http:  &dev_http
-      paths: 
       - backend:
           service:
-            name: istio-ingressgateway-dev
+            name: istio-ingressgateway
             port: 
-              number: 443
+              number: 8082
         path: /
         pathType: Prefix
-  - host: "dev.api.shatteredrealms.online"
-    http: *dev_http
+      - backend:
+          service:
+            name: istio-ingressgateway
+            port: 
+              number: 8083
+        path: /
+        pathType: Prefix
+      - backend:
+          service:
+            name: istio-ingressgateway
+            port: 
+              number: 8180
+        path: /
+        pathType: Prefix
+      - backend:
+          service:
+            name: istio-ingressgateway
+            port: 
+              number: 15021
+        path: /healthz/ready
+        pathType: Prefix
+  # - host: "shatteredrealmsonline.com"
+  #   http: &https
+  #     paths: 
+  #     - backend:
+  #         service:
+  #           name: istio-ingressgateway
+  #           port: 
+  #             number: 443
+  #       path: /
+  #       pathType: Prefix
+  # - host: "*.shatteredrealmsonline.com"
+  #   http: &https
+  # - host: "shatteredrealmsonline.com"
+  #   http: &https
+  # - host: "*.shatteredrealms.online"
+  #   http: &https
+  # - host: "shatteredrealms.online"
+  #   http: &https

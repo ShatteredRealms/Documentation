@@ -11,7 +11,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm install postgres bitnami/postgresql-ha -n observability -f files/postgres-observability-values.yaml
 helm install postgres bitnami/postgresql-ha -n auth -f files/postgres-auth-values.yaml
-helm install postgres bitnami/postgresql-ha -n sro-f files/postgres-sro-values.yaml
+helm install postgres bitnami/postgresql-ha -n sro -f files/postgres-sro-values.yaml
 helm install postgres bitnami/postgresql-ha -n sro-qa -f files/postgres-sro-qa-values.yaml
 kubectl apply -f psql-client.yaml -n observability
 kubectl apply -f psql-client.yaml -n auth 

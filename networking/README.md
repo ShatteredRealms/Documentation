@@ -36,28 +36,19 @@ mkdir -p certs
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
   -keyout certs/key.pem -out certs/cert.pem -subj "/CN=shatteredrealmsonline.com" \
   -addext "subjectAltName=DNS:*.shatteredrealmsonline.com"
-openssl x509 -req -sha256 -days 365 -CA certs/sro.crt -CAkey certs/sro.key -set_serial 1 -in certs/cert.pem -out certs/sro.com.crt
+# openssl x509 -req -sha256 -days 365 -CA certs/sro.crt -CAkey certs/sro.key -set_serial 1 -in certs/cert.pem -out certs/sro.com.crt
 
-openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-  -keyout certs/qa-key.pem -out certs/qa-cert.pem -subj "/CN=shatteredrealmsonline.com" \
-  -addext "subjectAltName=DNS:*.shatteredrealmsonline.com"
-
-kubectl create -n sro secret generic istio-tls-secret \
+kubectl create -n istio-system secret generic ingress-cert \
   --from-file=key=certs/key.pem \
   --from-file=cert=certs/cert.pem
-
-kubectl create -n sro-qa secret generic istio-qa-tls-secret \
-  --from-file=key=certs/qa-key.pem \
-  --from-file=cert=certs/qa-cert.pem
 
 echo "You can delete folder $(pwd) to remove used certs"
 popd 
 ```
 
-#### Apply the gateway
-##### AWS 
+Create the gateway
 ```bash
-kubectl apply -f aws-gateway.yaml
+kubectl apply -f gateway.yaml
 ```
 
 Create 2 public AWS certificates. One for the wildcard base domain(s) (ex. `domain.tld` and `*.domain.tld`). Then create another for the `api.domain.tld` and `*.api.domain.tld`. Add these ARNs to the `alb-ingress.yaml`.
@@ -90,7 +81,6 @@ echo Development API Ingress: $(kubectl get ingress gw-api-ingress -n sro-dev \
 
 ##### Microk8s
 ```bash
-kubectl apply -f microk8s-gateway.yaml
 kubectl apply -f microk8s-clusterissuer.yaml
 kubectl apply -f microk8s-certs.yaml
 ```

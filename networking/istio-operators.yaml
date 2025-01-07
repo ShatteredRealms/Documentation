@@ -4,7 +4,8 @@ metadata:
   namespace: istio-system
   name: sro-istiocontrolplane
 spec:
-  profile: default
+  profile: demo
+  hub: gcr.io/istio-release
   meshConfig:
     enableTracing: true
     accessLogFile: /dev/stdout
@@ -53,20 +54,40 @@ spec:
         label:
           istio: ingressgateway
         k8s:
+          # aws: start
+          serviceAnnotations:
+            alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
+            alb.ingress.kubernetes.io/healthcheck-port: "30261"
+          # aws: end
           service:
-            externalTrafficPolicy: Local
+            # microk8s: start
+            # externalTrafficPolicy: Local
+            # microk8s: end
+            # aws: start
+            type: NodePort
+            # healthCheckNodePort: 15021
+            # aws: end
             ports:
               - port: 15021
                 targetPort: 15021
                 name: status-port
+                # aws: start
+                nodePort: 30261
+                # aws: end
                 protocol: TCP
               - port: 80
                 targetPort: 8080
                 name: http2
+                # aws: start
+                nodePort: 31565
+                # aws: end
                 protocol: TCP
               - port: 443
                 targetPort: 8443
                 name: https
+                # aws: start
+                nodePort: 31804
+                # aws: end
                 protocol: TCP
               - port: 15012
                 targetPort: 15012
@@ -96,11 +117,15 @@ spec:
                 targetPort: 14318
                 name: i-http-uptrace
                 protocol: TCP
-      - name: istio-ingressgateway-qa
-        namespace: istio-system
-        enabled: true
-        label:
-          istio: ingressgateway-qa
+              # - port: 30267
+              #   targetPort: 30267
+              #   name: aws-elb-healthz
+              #   protocol: TCP
+      # - name: istio-ingressgateway-qa
+      #   namespace: istio-system
+      #   enabled: true
+      #   label:
+      #     istio: ingressgateway-qa
       # - name: istio-ingressgateway-obs
       #   namespace: istio-system
       #   enabled: true

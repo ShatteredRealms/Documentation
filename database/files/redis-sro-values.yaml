@@ -1,11 +1,11 @@
-persistence:
-  storageClass: "nvme-hostpath"
-
+# persistence:
+#   storageClass: "nvme-hostpath"
+#
 redis:
   resources:
     requests:
-      cpu: 2
-      memory: 4096Mi
+      cpu: .5
+      memory: 1024Mi
     limits:
       cpu: 6
       memory: 11288Mi
@@ -13,7 +13,7 @@ redis:
 updateJob:
   resources:
     requests:
-      cpu: 1.5
+      cpu: .5
       memory: 512Mi
     limits:
       cpu: 3
@@ -23,7 +23,7 @@ metrics:
   enbaled: true
   resources:
     requests:
-      cpu: 1.5
+      cpu: .5
       memory: 512Mi
     limits:
       cpu: 3
