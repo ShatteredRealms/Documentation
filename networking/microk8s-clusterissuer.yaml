@@ -16,7 +16,7 @@ spec:
       dns01:
         route53:
           region: us-east-1
-          accessKeyID: AKIA3LGMPH6KKVSAUXJT
+          accessKeyID: AKIA3LGMPH6KBB7FJGO4
           secretAccessKeySecretRef:
             name: prod-route53-credentials-secret
             key: secret-access-key
@@ -39,7 +39,7 @@ spec:
       dns01:
         route53:
           region: us-east-1
-          accessKeyID: AKIA3LGMPH6KKVSAUXJT
+          accessKeyID: AKIA3LGMPH6KBB7FJGO4
           secretAccessKeySecretRef:
             name: prod-route53-credentials-secret
             key: secret-access-key

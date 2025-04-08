@@ -29,7 +29,6 @@ spec:
     corsPolicy: &cors
       allowOrigins:
         - regex: ".*"
-        - regex: "^.*$"
       allowMethods:
         - POST
         - GET
@@ -37,6 +36,7 @@ spec:
         - PUT
         - DELETE
       allowHeaders:
+        - accept
         - keep-alive
         - user-agent
         - cache-control

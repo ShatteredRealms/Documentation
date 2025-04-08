@@ -19,10 +19,12 @@ spec:
         app: character
         version: v1
         sro: microservice
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
     spec:
       containers:
         - name: character
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/character:0.1.0
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/character-service:0.7.0
           ports:
           - containerPort: 8081
           imagePullPolicy: Always
@@ -31,22 +33,17 @@ spec:
               mountPath: "/etc/sro/"
               readOnly: true
           env:
-            - name: SRO_CHARACTER_POSTGRES_MASTER_PASSWORD
+            - name: SRO_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-postgresql-ha-postgresql
                   key: password
-            - name: SRO_CHARACTER_MONGO_MASTER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb
-                  key: mongodb-root-password
-            - name: SRO_CHARACTER_KEYCLOAK_ID
+            - name: SRO_KEYCLOAK_ID
               valueFrom:
                 secretKeyRef:
                   name: keycloak-character
                   key: id
-            - name: SRO_CHARACTER_KEYCLOAK_CLIENTSECRET
+            - name: SRO_KEYCLOAK_CLIENTSECRET
               valueFrom:
                 secretKeyRef:
                   name: keycloak-character
@@ -56,6 +53,8 @@ spec:
                 secretKeyRef:
                   name: redis-redis-cluster
                   key: redis-password
+            - name: SRO_SERVER_HOST
+              value: 0.0.0.0
       imagePullSecrets:
         - name: regcred
       volumes:
@@ -63,8 +62,8 @@ spec:
           configMap:
             name: sro-config 
             items:
-              - key: config.yaml
-                path: config.yaml
+              - key: sro-character.yaml
+                path: sro-character.yaml
 ---
 apiVersion: v1
 kind: Service
@@ -76,25 +75,6 @@ metadata:
     service: character
 spec:
   type: ClusterIP
-  selector:
-    app: character
-    version: v1
-  ports:
-    - port: 80
-      targetPort: 8081
-      appProtocol: grpc
-      protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: character-headless
-  namespace: sro
-  labels:
-    app: character
-    headless: character
-spec:
-  clusterIP: None
   selector:
     app: character
     version: v1

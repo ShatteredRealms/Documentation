@@ -19,25 +19,27 @@ spec:
         app: gamebackend
         version: v1
         sro: microservice
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
     spec:
       containers:
         - name: gamebackend
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gamebackend:0.1.0
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gameserver-service:0.6.1
           ports:
           - containerPort: 8082
           imagePullPolicy: Always
           env:
-            - name: SRO_GAMEBACKEND_POSTGRES_MASTER_PASSWORD
+            - name: SRO_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-postgresql-ha-postgresql
                   key: password
-            - name: SRO_GAMEBACKEND_KEYCLOAK_ID
+            - name: SRO_KEYCLOAK_ID
               valueFrom:
                 secretKeyRef:
                   name: keycloak-gamebackend
                   key: id
-            - name: SRO_GAMEBACKEND_KEYCLOAK_CLIENTSECRET
+            - name: SRO_KEYCLOAK_CLIENTSECRET
               valueFrom:
                 secretKeyRef:
                   name: keycloak-gamebackend
@@ -47,6 +49,8 @@ spec:
                 secretKeyRef:
                   name: redis-redis-cluster
                   key: redis-password
+            - name: SRO_SERVER_HOST
+              value: 0.0.0.0
           volumeMounts:
             # - name: agones-client-certs
             #   mountPath: "/etc/sro/auth/agones/client"
@@ -78,8 +82,8 @@ spec:
           configMap:
             name: sro-config 
             items:
-              - key: config.yaml
-                path: config.yaml
+              - key: sro-gameserver-service.yaml
+                path: sro-gameserver-service.yaml
 ---
 apiVersion: v1
 kind: Service
@@ -91,25 +95,6 @@ metadata:
     service: gamebackend
 spec:
   type: ClusterIP
-  selector:
-    app: gamebackend
-    version: v1
-  ports:
-    - port: 80
-      targetPort: 8082
-      protocol: TCP
-      appProtocol: grpc
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: gamebackend-headless
-  namespace: sro
-  labels:
-    app: gamebackend
-    headless: gamebackend
-spec:
-  clusterIP: None
   selector:
     app: gamebackend
     version: v1

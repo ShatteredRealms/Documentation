@@ -4,7 +4,7 @@ metadata:
   namespace: istio-system
   name: sro-istiocontrolplane
 spec:
-  profile: demo
+  profile: minimal
   hub: gcr.io/istio-release
   meshConfig:
     enableTracing: true
@@ -64,7 +64,7 @@ spec:
             # externalTrafficPolicy: Local
             # microk8s: end
             # aws: start
-            type: NodePort
+            # type: NodePort
             # healthCheckNodePort: 15021
             # aws: end
             ports:
@@ -72,21 +72,21 @@ spec:
                 targetPort: 15021
                 name: status-port
                 # aws: start
-                nodePort: 30261
+                # nodePort: 30261
                 # aws: end
                 protocol: TCP
               - port: 80
                 targetPort: 8080
                 name: http2
                 # aws: start
-                nodePort: 31565
+                # nodePort: 31565
                 # aws: end
                 protocol: TCP
               - port: 443
                 targetPort: 8443
                 name: https
                 # aws: start
-                nodePort: 31804
+                # nodePort: 31804
                 # aws: end
                 protocol: TCP
               - port: 15012
@@ -97,42 +97,3 @@ spec:
                 targetPort: 15443
                 name: tls
                 protocol: TCP
-              - port: 8180
-                targetPort: 8180
-                name: i-grpc-8180
-                protocol: TCP
-              - port: 8081
-                targetPort: 8081
-                name: i-grpc-8081
-                protocol: TCP
-              - port: 8082
-                targetPort: 8082
-                name: i-grpc-8082
-                protocol: TCP
-              - port: 14317
-                targetPort: 14317
-                name: i-grpc-uptrace
-                protocol: TCP
-              - port: 14318
-                targetPort: 14318
-                name: i-http-uptrace
-                protocol: TCP
-              # - port: 30267
-              #   targetPort: 30267
-              #   name: aws-elb-healthz
-              #   protocol: TCP
-      # - name: istio-ingressgateway-qa
-      #   namespace: istio-system
-      #   enabled: true
-      #   label:
-      #     istio: ingressgateway-qa
-      # - name: istio-ingressgateway-obs
-      #   namespace: istio-system
-      #   enabled: true
-      #   label:
-      #     istio: ingressgateway-obs
-      # - name: istio-ingressgateway-dev
-      #   namespace: 
-      #   enabled: true
-      #   label:
-      #     istio: ingressgateway-dev

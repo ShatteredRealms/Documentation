@@ -45,7 +45,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: ecr-registry-helper
-  namespace: default
+  namespace: sro
 spec:
   schedule: "0 */10 * * *" 
   successfulJobsHistoryLimit: 2
