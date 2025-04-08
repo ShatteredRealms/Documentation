@@ -1,5 +1,15 @@
 # Configuration for the ingester
+tempo:
+  fullename: tempo
+  memberlist:
+    appProtocol: tcp
 ingester:
+  replicas: 1
+  config:
+    replication_factor: 1
+  affinity: ""
+  appProtocol:
+    grpc: tcp
   extraEnv:
     - name: AWS_ACCESS_KEY_ID
       valueFrom:
@@ -14,6 +24,7 @@ ingester:
 
 # Configuration for the metrics-generator
 metricsGenerator:
+  affinity: ""
   # -- Specifies whether a metrics-generator should be deployed
   enabled: false
   extraEnv:
@@ -30,6 +41,9 @@ metricsGenerator:
 
 # Configuration for the distributor
 distributor:
+  appProtocol:
+    grpc: tcp
+  affinity: ""
   # -- Number of replicas for the distributor
   replicas: 1
   # -- Environment variables to add to the distributor pods
@@ -46,6 +60,9 @@ distributor:
           key: tempo-s3-secretAccessKey
 # Configuration for the compactor
 compactor:
+  appProtocol:
+    grpc: tcp
+  affinity: ""
   # -- Number of replicas for the compactor
   replicas: 1
   # -- Environment variables to add to the compactor pods
@@ -62,8 +79,12 @@ compactor:
           key: tempo-s3-secretAccessKey
 # Configuration for the querier
 querier:
+  appProtocol:
+    grpc: tcp
+  topologySpreadConstraints: ""
+  affinity: ""
   # -- Number of replicas for the querier
-  replicas: 1
+  replicas: 3
   # -- Environment variables to add to the querier pods
   extraEnv:
     - name: AWS_ACCESS_KEY_ID
@@ -78,6 +99,9 @@ querier:
           key: tempo-s3-secretAccessKey
 # Configuration for the query-frontend
 queryFrontend:
+  appProtocol:
+    grpc: tcp
+  affinity: ""
   query:
     # -- Required for grafana version <7.5 for compatibility with jaeger-ui. Doesn't work on ARM arch
     enabled: false
@@ -111,32 +135,6 @@ queryFrontend:
 multitenancyEnabled: false
 
 traces:
-  jaeger:
-    grpc:
-      # -- Enable Tempo to ingest Jaeger GRPC traces
-      enabled: false
-      # -- Jaeger GRPC receiver config
-      receiverConfig: {}
-    thriftBinary:
-      # -- Enable Tempo to ingest Jaeger Thrift Binary traces
-      enabled: false
-      # -- Jaeger Thrift Binary receiver config
-      receiverConfig: {}
-    thriftCompact:
-      # -- Enable Tempo to ingest Jaeger Thrift Compact traces
-      enabled: false
-      # -- Jaeger Thrift Compact receiver config
-      receiverConfig: {}
-    thriftHttp:
-      # -- Enable Tempo to ingest Jaeger Thrift HTTP traces
-      enabled: false
-      # -- Jaeger Thrift HTTP receiver config
-      receiverConfig: {}
-  zipkin:
-    # -- Enable Tempo to ingest Zipkin traces
-    enabled: false
-    # -- Zipkin receiver config
-    receiverConfig: {}
   otlp:
     http:
       # -- Enable Tempo to ingest Open Telemetry HTTP traces
@@ -148,11 +146,6 @@ traces:
       enabled: true
       # -- GRPC receiver advanced config
       receiverConfig: {}
-  opencensus:
-    # -- Enable Tempo to ingest Open Census traces
-    enabled: false
-    # -- Open Census receiver config
-    receiverConfig: {}
   # -- Enable Tempo to ingest traces from Kafka. Reference: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/kafkareceiver
   kafka: {}
 
@@ -195,6 +188,7 @@ memcached:
 
 # Configuration for the gateway
 gateway:
+  affinity: ""
   # -- Specifies whether the gateway should be enabled
   enabled: true
   # -- Number of replicas for the gateway
@@ -211,3 +205,11 @@ gateway:
         secretKeyRef:
           name: tempo-s3-secrets
           key: tempo-s3-secretAccessKey
+
+global_overrides:
+  metrics_generator_processors:
+    - service-graphs
+    - span-metrics
+memberlist:
+  rejoin_interval: 60s
+  dead_node_reclaim_time: 60s

@@ -26,4 +26,4 @@ metadata:
   namespace: observability
 spec:
   mtls:
-    mode: DISABLE
+    mode: STRICT

@@ -7,6 +7,8 @@ spec:
   profile: minimal
   hub: gcr.io/istio-release
   meshConfig:
+    defaultConfig:
+      holdApplicationUntilProxyStarts: true
     enableTracing: true
     accessLogFile: /dev/stdout
     extensionProviders:
