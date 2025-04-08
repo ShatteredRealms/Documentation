@@ -594,25 +594,86 @@ plugins: []
 ## Configure grafana datasources
 ## ref: http://docs.grafana.org/administration/provisioning/#datasources
 ##
-datasources: {}
-#  datasources.yaml:
-#    apiVersion: 1
-#    datasources:
-#    - name: Prometheus
-#      type: prometheus
-#      url: http://prometheus-prometheus-server
-#      access: proxy
-#      isDefault: true
-#    - name: CloudWatch
-#      type: cloudwatch
-#      access: proxy
-#      uid: cloudwatch
-#      editable: false
-#      jsonData:
-#        authType: default
-#        defaultRegion: us-east-1
-#    deleteDatasources: []
-#    - name: Prometheus
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: prometheus
+      type: prometheus
+      url: http://prometheus-server.observability.svc.cluster.local
+      access: proxy
+      orgId: 1
+      uid: "cdh2xp1aj4i68f"
+      jsonData:
+        httpMethod: "POST"
+      readOnly: false
+    - name: loki
+      type: loki
+      url: http://loki-gateway.observability.svc.cluster.local
+      access: proxy
+      orgId: 1
+      uid: "fdh3g44hq0jcwe"
+      jsonData:
+        derivedFields:
+        - datasourceUid: "adhe2yc0imwhse"
+          matcherRegex:	"traceId=([\\w]*)"
+          matcherType:	"regex"
+          name:	"TraceID"
+          url:	"${__value.raw}"
+          urlDisplayLabel:	"Trace"
+        - matcherRegex: 'requestor="[\\w]+:([\\w-]+)"'
+          matcherType:	"regex"
+          name:	"RequestorID"
+          url:	"https://sso.shatteredrealmsonline.com/admin/master/console/#/default/users/${__value.raw}/settings"
+          urlDisplayLabel:	"User"
+        tlsSkipVerify: false
+      readOnly: false
+    - name: tempo
+      type: tempo
+      url: http://tempo-gateway.observability.svc.cluster.local
+      access: proxy
+      orgId: 1
+      uid: "adhe2yc0imwhse"
+      jsonData:
+        lokiSearch:
+          datasourceUid: "fdh3g44hq0jcwe"
+        nodeGraph:
+          enabled: true
+        search:
+          filters:
+          - id: service-name
+            operator: "="
+            scope: "resouce"
+            tag: "service.name"
+          - id: span-name
+            operator: "="
+            scope: "span"
+            tag: "span"
+        serviceMap:
+          datasourceUid: "cdh2xp1aj4i68f"
+        spanBar:
+          type: "Duration"
+        tlsSkipVerify: false
+        tracesToLogsV2:
+          customQuery: false
+          datasourceUid: "fdh3g44hq0jcwe"
+          filterByTraceID: true
+          tags: []
+        tracesToProfiles:
+          customQuery: false
+          datasourceUid: "grafana"
+        readOnly: false
+    - name: alertmanager
+      type: alertmanager
+      access: proxy
+      url: http://prometheus-alertmanager.observability.svc.cluster.local
+      orgId: 1
+      uid: "bdhe5q8zsw35sa"
+      jsonData:
+        implementation: "prometheus"
+      readOnly: false
+
+
 
 ## Configure grafana alerting (can be templated)
 ## ref: http://docs.grafana.org/administration/provisioning/#alerting

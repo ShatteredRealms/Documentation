@@ -41,15 +41,14 @@ loki:
   compactor:
     retention_enabled: true 
     delete_request_store: s3
-compactor:
-  appProtocol:
-    grpc: tcp
+
 querier:
-  appProtocol:
-    grpc: tcp
-queryFrontend:
-  appProtocol:
-    grpc: tcp
+  appProtocol: tcp
+  queryFrontend:
+    appProtocol: http
+  query_range:
+    appProtocol: http
+  max_concurrent: 20
 ingester:
   appProtocol:
     grpc: tcp
@@ -73,7 +72,6 @@ monitoring:
     enabled: true
 # Configuration for the write pod(s)
 write:
-  replicas: 1
   affinity: {}
   # -- Additional CLI args for the backend
   extraArgs:
@@ -97,7 +95,6 @@ write:
           key: grafana-loki-s3-secretAccessKey
 # Configuration for the read pod(s)
 read:
-  replicas: 1
   affinity: {}
   # -- Additional CLI args for the read
   extraArgs:
@@ -123,7 +120,6 @@ read:
           key: grafana-loki-s3-secretAccessKey
 # Configuration for the backend pod(s)
 backend:
-  replicas: 1
   affinity: {}
   # -- Additional CLI args for the backend
   extraArgs:
@@ -156,13 +152,10 @@ memberlist:
     publishNotReadyAddresses: false
 # Configuration for the gateway
 indexGateway:
-  appProtocol:
-    grpc: tcp
+  appProtocol: http
 gateway:
-  replicas: 1
   service:
     appProtocol: http
-  affinity: {}
   # -- Specifies whether the gateway should be enabled
   enabled: true
 
