@@ -6,24 +6,3 @@ metadata:
 spec:
   mtls:
     mode: STRICT
----
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: kiali
-  namespace: istio-system
-spec:
-  selector:
-    matchLabels:
-      app: kiali
-  mtls:
-    mode: DISABLE
----
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: default
-  namespace: observability
-spec:
-  mtls:
-    mode: STRICT
