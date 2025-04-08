@@ -224,7 +224,7 @@ service:
   labels: {}
   portName: service
   # Adds the appProtocol field to the service. This allows to work with istio protocol selection. Ex: "http" or "tcp"
-  appProtocol: ""
+  appProtocol: http
 
 serviceMonitor:
   ## If true, a ServiceMonitor CRD is created for a prometheus operator
@@ -1199,7 +1199,7 @@ imageRenderer:
     port: 8081
     targetPort: 8081
     # Adds the appProtocol field to the image-renderer service. This allows to work with istio protocol selection. Ex: "http" or "tcp"
-    appProtocol: ""
+    appProtocol: http
   serviceMonitor:
     ## If true, a ServiceMonitor CRD is created for a prometheus operator
     ## https://github.com/coreos/prometheus-operator
