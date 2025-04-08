@@ -4,51 +4,17 @@ metadata:
   name: sro-config
   namespace: sro
 data:
-  config.yaml: |
-    character:
-      remote:
-        host: 'character'
-        port: 80
-      mode: 'production'
-      logLevel: 4
-      postgres:
-        master:
-          host: 'postgres-postgresql-ha-pgpool'
-      mongo:
-        master:
-          host: 'mongodb'
-          username: 'root'
-    gamebackend:
-      remote:
-        host: 'gamebackend'
-        port: 80
-      mode: 'production'
-      logLevel: 5
-      postgres:
-        master:
-          host: 'postgres-postgresql-ha-pgpool'
-    chat:
-      remote:
-        host: 'chat'
-        port: 80
-      mode: 'production'
-      logLevel: 4
-      kafka:
-        port: 9092
-        host: 'my-cluster-kafka-bootstrap.kafka.svc'
-      postgres:
-        master:
-          host: 'postgres-postgresql-ha-pgpool'
-    agones:
-      namespace: 'sro-gs'
-      allocator:
-        port: 443
-        host: 75.61.95.173
+  sro-character.yaml: |
+    mode: 'prod'
+    logLevel: 4
+    postgres:
+      host: 'postgres-postgresql-ha-pgpool'
+    openTelemetryAddress: otel-collector-cluster-opentelemetry-collector.observability.svc.cluster.local:4317
     keycloak:
       baseURL: 'https://sso.shatteredrealmsonline.com'
-      realm: 'default'
-    opentelemetry:
-      addr: otel-collector-cluster-opentelemetry-collector.observability.svc.cluster.local:4317
+    kafka:
+      port: 9092
+      host: 'my-cluster-kafka-bootstrap.kafka.svc'
     redis:
       master:
         host: redis-redis-cluster-0.redis-redis-cluster-headless.sro.svc.cluster.local
@@ -64,3 +30,58 @@ data:
           port: 6379
         - host: redis-redis-cluster-5.redis-redis-cluster-headless.sro.svc.cluster.local
           port: 6379
+  sro-chat.yaml: |
+    mode: 'prod'
+    logLevel: 4
+    postgres:
+      host: 'postgres-postgresql-ha-pgpool'
+    openTelemetryAddress: otel-collector-cluster-opentelemetry-collector.observability.svc.cluster.local:4317
+    keycloak:
+      baseURL: 'https://sso.shatteredrealmsonline.com'
+    kafka:
+      port: 9092
+      host: 'my-cluster-kafka-bootstrap.kafka.svc'
+    redis:
+      master:
+        host: redis-redis-cluster-0.redis-redis-cluster-headless.sro.svc.cluster.local
+        port: 6379
+      slaves:
+        - host: redis-redis-cluster-1.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-2.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-3.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-4.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-5.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+  sro-gameserver-service.yaml: |
+    mode: 'prod'
+    logLevel: 4
+    postgres:
+      host: 'postgres-postgresql-ha-pgpool'
+    kafka:
+      port: 9092
+      host: 'my-cluster-kafka-bootstrap.kafka.svc'
+    openTelemetryAddress: otel-collector-cluster-opentelemetry-collector.observability.svc.cluster.local:4317
+    keycloak:
+      baseURL: 'https://sso.shatteredrealmsonline.com'
+    gsm:
+      gameServerImage: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/game
+    redis:
+      master:
+        host: redis-redis-cluster-0.redis-redis-cluster-headless.sro.svc.cluster.local
+        port: 6379
+      slaves:
+        - host: redis-redis-cluster-1.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-2.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-3.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-4.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+        - host: redis-redis-cluster-5.redis-redis-cluster-headless.sro.svc.cluster.local
+          port: 6379
+

@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: gamebackend
-          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gameserver-service:0.6.1
+          image: 779965382548.dkr.ecr.us-east-1.amazonaws.com/sro/gameserver-service:0.6.2
           ports:
           - containerPort: 8082
           imagePullPolicy: Always
